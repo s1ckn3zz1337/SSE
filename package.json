@@ -1,0 +1,15 @@
+{
+  "name": "SSEPasswordManager",
+  "version": "6.9.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "dependencies": {
+    "async": "~2.2.0",
+    "body-parser": "~1.16.0",
+    "debug": "~2.6.0",
+    "express": "~4.14.1",
+    "logger": "0.0.1"
+  }
+}
