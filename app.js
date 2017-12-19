@@ -10,6 +10,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+// static content setup
 app.use(express.static(path.join(__dirname, config.env.webContentDir)));
 
 // here we set the routes
