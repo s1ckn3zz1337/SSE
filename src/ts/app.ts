@@ -1,44 +1,44 @@
-const express = require('express');
-const path = require('path');
-const config = require('./config.js');
-const bodyParser = require('body-parser');
-const http = require('http');
-
-const apiRoutes = require('./routes/apiRouter');
+import * as path from "path";
+import { Env } from "./config";
+import * as bodyParser from "body-parser";
+import * as http from "http";
+import { router } from "./routes/apiRouter";
+import { STATUS_CODES } from "http";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // static content setup
-app.use(express.static(path.join(__dirname, config.env.webContentDir)));
+app.use(express.static(path.join(__dirname, Env.webContentDir)));
 
 // here we set the routes
-
-app.use('/api', apiRoutes);
+app.use('/api', router);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  const err = new Error('Not Found');
+app.use(function (req, res, next) {
+  const err: any = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
   res.status(err.status || 500);
-  res.send({message : 'Error - Not Found', statusCode: 404})
+  res.send({ message: 'Error - Not Found', statusCode: 404 })
 });
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(config.env.port || '3000');
+const port = normalizePort(Env.port || '3000');
 app.set('port', port);
 
 /**
@@ -58,9 +58,8 @@ server.on('listening', onListening);
 /**
  * Normalize a port into a number, string, or false.
  */
-
-function normalizePort(val) {
-  const port = parseInt(val, 10);
+function normalizePort(val: string | number) {
+  const port = parseInt(val as string, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -78,15 +77,14 @@ function normalizePort(val) {
 /**
  * Event listener for HTTP server "error" event.
  */
-
-function onError(error) {
+function onError(error: any) {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
   const bind = typeof port === 'string'
-      ? 'Pipe ' + port
-      : 'Port ' + port;
+    ? 'Pipe ' + port
+    : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -110,8 +108,8 @@ function onError(error) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'port ' + addr.port;
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
 }
 
 
