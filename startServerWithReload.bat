@@ -1,1 +1,1 @@
-nodemon --inspect=45649 --inspect-brk build\app.js
+nodemon

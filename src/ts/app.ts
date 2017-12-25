@@ -2,10 +2,11 @@ import * as path from "path";
 import { Env } from "./config";
 import * as bodyParser from "body-parser";
 import * as http from "http";
-import { router } from "./routes/apiRouter";
+import { router } from "./routes/ApiRouter";
 import { STATUS_CODES } from "http";
 import * as express from "express";
-import { Request, Response, NextFunction } from "express";
+import { Request as Req, Response as Res, NextFunction as Next } from "express";
+import { request } from "http";
 
 const app = express();
 
@@ -14,9 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // static content setup
 app.use(express.static(path.join(__dirname, Env.webContentDir)));
 
+app.get("/", (req: Req, res: Res, next: Next) => {
+  res.sendFile(path.join(__dirname, Env.indexHtml));
+});
+
 // here we set the routes
 app.use('/api', router);
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   const err: any = new Error('Not Found');
@@ -25,7 +29,7 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
+app.use(function (err: any, req: Req, res: Res, next: Next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -104,7 +108,6 @@ function onError(error: any) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string'
