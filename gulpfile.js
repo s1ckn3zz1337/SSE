@@ -9,7 +9,7 @@ var ts = require("gulp-typescript");
 
 var tsProject = ts.createProject({
     noImplicitAny: true,
-	module: "commonjs",
+    module: "commonjs",
     target: "ES2017"
 });
 
@@ -34,11 +34,3 @@ gulp.task("deploy", ["tsc"], function () {
     gulp.src(htmlFiles)
         .pipe(gulp.dest(buildDir));
 });
-
-gulp.task('start', function () {
-    nodemon({
-      script: 'server.js'
-    , ext: 'js html'
-    , env: { 'NODE_ENV': 'development' }
-    })
-  })
