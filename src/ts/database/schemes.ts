@@ -1,7 +1,30 @@
-import { Schema, model, SchemaDefinition } from "mongoose";
-import * as Models from "../model/Model";
+import { Schema, model, SchemaDefinition, Document } from "mongoose";
+import * as Models from "../objects/Model";
 
-/** TODO: due to a definition weakness, the schemas have to be MANUALLY synchronized with the model definitions */
+/** interfaces */
+export interface IUser extends Document {
+    username: String,
+    email: String,
+    password: String,
+    keyrings: IKeyRing[]
+}
+
+export interface IKeyRing extends Document {
+    schemaId: Schema.Types.ObjectId,
+    keyEntites: IKeyEntity[]
+}
+
+export interface IKeyEntity extends Document {
+    schemaId: Schema.Types.ObjectId,
+    keyName: String,
+    keyEncryptedPassword: String,
+    keyDescription: String,
+    keyURL: String
+}
+
+/** TODO sync schemas and interfaces */
+
+
 export var keyEntitySchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     keyName: String,
@@ -23,6 +46,6 @@ export var userSchema: Schema = new Schema({
     keyrings: [keyRingSchema]
 });
 
-export var KeyEntity = model<Models.IKeyEntity>('KeyEntity', keyEntitySchema);
-export var KeyRing = model<Models.IKeyRing>('KeyRing', keyRingSchema);
-export var UserSchema = model<Models.IUser>('userSchema', userSchema);
+export const KeyEntity = model<IKeyEntity>('KeyEntity', keyEntitySchema);
+export const KeyRing = model<IKeyRing>('KeyRing', keyRingSchema);
+export const UserSchema = model<IUser>('userSchema', userSchema);

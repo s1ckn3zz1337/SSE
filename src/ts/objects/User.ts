@@ -1,5 +1,6 @@
 import { saltHashPassword } from '../services/cryptoService';
 import { stringify } from "querystring";
+
 export class User {
 
     public password: string;
