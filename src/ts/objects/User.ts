@@ -10,9 +10,13 @@ export class User {
     }
 
     register() {
+        return new Promise((resolve, reject) => {
+            // todo add registration flow here
+        });
     }
 
     login() {
+
     }
 
     checkCredentials() {

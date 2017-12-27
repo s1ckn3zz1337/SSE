@@ -2,6 +2,7 @@ import * as Express from "express";
 import { Response, Request, NextFunction } from "express";
 import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
+import {User} from "../objects/User";
 
 export const router = Express.Router();
 
@@ -20,8 +21,21 @@ router.post('/login', (req: Request, res: Response, next: NextFunction) => {
 
 router.post('/register', (req: Request, res: Response)=>{
     // dummy impl
-    const body = req.body;
-    res.send(body);
+    const body = req.body || {};
+    const username = body.username;
+    const password = body.password;
+    if(username && password){
+        const user = new User("", username, password);
+        user.register().then( data =>{
+            res.send({statusCode: 201, message: 'Successfully registered!', id: user.id});
+        }).catch(error =>{
+            res.statusCode = 500;
+            res.send({statusCode: 500, message: 'Internal Server error', error: error});
+        })
+    }else{
+        res.statusCode = 400;
+        res.send({statusCode: 400, message: 'Cannot process request, missing data...'})
+    }
 });
 
 // we could also use a new router here for better route managment
