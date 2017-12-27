@@ -1,6 +1,8 @@
-import { Document, Schema, Model, model} from "mongoose";
+import { Schema, model, SchemaDefinition } from "mongoose";
+import * as Models from "../model/Model";
 
-export var keyEntity:Schema = new Schema({
+/** TODO: due to a definition weakness, the schemas have to be MANUALLY synchronized with the model definitions */
+export var keyEntitySchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     keyName: String,
     keyEncryptedPassword: String,
@@ -8,19 +10,19 @@ export var keyEntity:Schema = new Schema({
     keyURL: String
 });
 
-export var keyRing:Schema = new Schema({
+export var keyRingSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
-    keyEntites: [keyEntity]
+    keyEntites: [keyEntitySchema]
 });
 
-export var userSchema:Schema = new Schema({
+export var userSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     username: String,
     email: String,
     password: String,
-    keyrings: [keyRing]
+    keyrings: [keyRingSchema]
 });
 
-export var KeyEntity = model('KeyEntity', keyEntity);
-export var KeyRing = model('KeyRing', keyRing);
-export var UserSchema = model('userSchema', userSchema);
+export var KeyEntity = model<Models.IKeyEntity>('KeyEntity', keyEntitySchema);
+export var KeyRing = model<Models.IKeyRing>('KeyRing', keyRingSchema);
+export var UserSchema = model<Models.IUser>('userSchema', userSchema);
