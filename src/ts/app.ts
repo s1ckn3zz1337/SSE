@@ -1,5 +1,6 @@
 import * as path from "path";
-import { Env } from "./config";
+import { Env } from "./config/config";
+import {logFactory} from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 import { router } from "./routes/apiRouter";
@@ -10,6 +11,8 @@ import { request } from "http";
 
 // connect database
 const mongoDB = require('./services/dbService');
+
+const log = logFactory.getLogger('.mainApp');
 
 const app = express();
 
@@ -56,7 +59,7 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-console.log('listening');
+log.info('listening on ' + port);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
@@ -95,11 +98,11 @@ function onError(error: any) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      log.error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      log.error(bind + ' is already in use');
       process.exit(1);
       break;
     default:
