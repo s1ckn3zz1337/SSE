@@ -1,0 +1,1 @@
+Passwords in createAdmin.js and createSSEUser.js are hardcoded right now, please change them as needed and remove in time
