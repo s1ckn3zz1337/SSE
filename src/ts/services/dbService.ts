@@ -1,10 +1,11 @@
 // import credentials from config
 import { Env } from "../config";
+import * as scheme from '../database/schemes';
 
 'use strict';
 const mongoose = require('mongoose');
 
-// initialize database
+// connect database
 const init = () => {
     mongoose.connect('mongodb://' +
         Env.mongoDB.user + ':' +

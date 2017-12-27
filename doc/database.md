@@ -71,7 +71,6 @@ exit
 ```
 {
    _id: <ObjectID>,
-   (privateKey: String,)
    keyEntities: [keyEntity]
 }
 ```
