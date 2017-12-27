@@ -1,14 +1,26 @@
+// import credentials from config
+import { Env } from "../config";
+
 'use strict';
 const mongoose = require('mongoose');
 
+// initialize database
 const init = () => {
-    // connect to db here
+    mongoose.connect('mongodb://' +
+        Env.mongoDB.user + ':' +
+        Env.mongoDB.password + '@' + 
+        Env.mongoDB.host + ':' +
+        Env.mongoDB.port +'/' +
+        Env.mongoDB.database, {
+        useMongoClient: true }, function (err:string) {
+            if (err) throw err;
+            console.log("MongoDB connected!");
+    });
 };
 
-// call init, will be executed once when this file is loaded by require, require will keep this single instance and will
-// return it on all next requires
 init();
 
+// database services
 export class DbService<T> {
 
     public save(data: T) {

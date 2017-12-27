@@ -2,19 +2,22 @@ import * as path from "path";
 import { Env } from "./config";
 import * as bodyParser from "body-parser";
 import * as http from "http";
-import { router } from "./routes/ApiRouter";
+import { router } from "./routes/apiRouter";
 import { STATUS_CODES } from "http";
 import * as express from "express";
 import { Request as Req, Response as Res, NextFunction as Next } from "express";
 import { request } from "http";
 
+// connect database
+const mongoDB = require('./services/dbService');
+
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// static content setup
 app.use(express.static(path.join(__dirname, Env.webContentDir)));
 
+// default route
 app.get("/", (req: Req, res: Res, next: Next) => {
   res.sendFile(path.join(__dirname, Env.indexHtml));
 });
@@ -48,7 +51,6 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
 const server = http.createServer(app);
 
 /**
