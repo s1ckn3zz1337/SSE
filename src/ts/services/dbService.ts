@@ -1,28 +1,27 @@
 // import credentials from config
 import { Env } from "../config/config";
-import {logFactory} from "../config/ConfigLog4J";
+import { logFactory } from "../config/ConfigLog4J";
 import * as scheme from '../database/schemes';
-import {error} from "util";
-import {Error} from "mongoose";
-
-'use strict';
-const mongoose = require('mongoose');
-const log = logFactory.getLogger(".dbService");
+import { error } from "util";
+import * as mongoose from "mongoose";
+import { MongoError } from "mongodb";
 
 // connect database
 const init = () => {
+    let log = logFactory.getLogger("dbService");
     mongoose.connect('mongodb://' +
         Env.mongoDB.user + ':' +
         Env.mongoDB.password + '@' +
         Env.mongoDB.host + ':' +
-        Env.mongoDB.port +'/' +
+        Env.mongoDB.port + '/' +
         Env.mongoDB.database, {
-        useMongoClient: true }, function (err:string) {
+            useMongoClient: true
+        }, function (err: MongoError) {
             if (err) log.error('Error while creating mongoose connection' + err);
-            else{
+            else {
                 log.info('MongoDB connected!');
             }
-    });
+        });
 };
 
 init();
