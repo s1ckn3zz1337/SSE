@@ -1,7 +1,7 @@
 import * as Express from "express";
 import { Response, Request, NextFunction } from "express";
-import * as AuthService from "../services/AuthService";
-import * as GateKeeper from "../handler/Gatekeeper";
+import * as AuthService from "../services/authService";
+import * as GateKeeper from "../handler/gatekeeper";
 
 export const router = Express.Router();
 
