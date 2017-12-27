@@ -4,6 +4,7 @@ const resources = "src/resources/**/*.*";
 const jsFiles = "src/js/**/*.js";
 const htmlFiles = "src/html/**/*.html";
 
+var del = require("del");
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 
@@ -11,6 +12,10 @@ var tsProject = ts.createProject({
     noImplicitAny: true,
     module: "commonjs",
     target: "ES2017"
+});
+
+gulp.task("clean", function () {
+    return del([buildDir]);
 });
 
 gulp.task("tsc", function () {
@@ -26,7 +31,7 @@ gulp.task("default", ["deploy"], function () {
 });
 
 
-gulp.task("deploy", ["tsc"], function () {
+gulp.task("deploy", ["clean", "tsc"], function () {
     gulp.src(resources)
         .pipe(gulp.dest(buildDir));
     gulp.src(jsFiles)
