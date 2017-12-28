@@ -1,12 +1,13 @@
 import { saltHashPassword } from '../services/cryptoService';
 import { stringify } from "querystring";
+import { IUser } from "./Model"
 
-export class User {
+export class User implements IUser {
 
     public password: string;
 
     constructor(public id: string, public username: string, password: string) {
-        this.password = saltHashPassword(password, username)
+        this.password = saltHashPassword(password, username);
     }
 
     register() {

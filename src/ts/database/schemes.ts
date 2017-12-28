@@ -2,19 +2,19 @@ import { Schema, model, SchemaDefinition, Document } from "mongoose";
 import * as Models from "../objects/Model";
 
 /** interfaces */
-export interface IUser extends Document {
+export interface UserDocument extends Document {
     username: String,
     email: String,
     password: String,
-    keyrings: IKeyRing[]
+    keyrings: KeyRingDocument[]
 }
 
-export interface IKeyRing extends Document {
+export interface KeyRingDocument extends Document {
     schemaId: Schema.Types.ObjectId,
-    keyEntites: IKeyEntity[]
+    keyEntites: KeyEntityDocument[]
 }
 
-export interface IKeyEntity extends Document {
+export interface KeyEntityDocument extends Document {
     schemaId: Schema.Types.ObjectId,
     keyName: String,
     keyEncryptedPassword: String,
@@ -46,6 +46,6 @@ export var userSchema: Schema = new Schema({
     keyrings: [keyRingSchema]
 });
 
-export const KeyEntity = model<IKeyEntity>('KeyEntity', keyEntitySchema);
-export const KeyRing = model<IKeyRing>('KeyRing', keyRingSchema);
-export const UserSchema = model<IUser>('userSchema', userSchema);
+export const KeyEntity = model<KeyEntityDocument>('KeyEntity', keyEntitySchema);
+export const KeyRing = model<KeyRingDocument>('KeyRing', keyRingSchema);
+export const UserSchema = model<UserDocument>('userSchema', userSchema);
