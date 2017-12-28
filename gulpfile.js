@@ -18,12 +18,6 @@ gulp.task("clean", function () {
     return del([buildDir]);
 });
 
-gulp.task("tsc", function () {
-    return gulp.src(tsFiles)
-        .pipe(tsProject())
-        .js.pipe(gulp.dest(buildDir));
-});
-
 gulp.task("default", ["deploy"], function () {
     gulp.watch(tsFiles, ["deploy"]);
     gulp.watch(resources, ["deploy"]);
@@ -31,7 +25,10 @@ gulp.task("default", ["deploy"], function () {
 });
 
 
-gulp.task("deploy", ["clean", "tsc"], function () {
+gulp.task("deploy", ["clean"], function () {
+    gulp.src(tsFiles)
+        .pipe(tsProject())
+        .js.pipe(gulp.dest(buildDir));
     gulp.src(resources)
         .pipe(gulp.dest(buildDir));
     gulp.src(jsFiles)
