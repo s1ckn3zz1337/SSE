@@ -1,124 +1,141 @@
 import * as path from "path";
 import { Env } from "./config/config";
-import {logFactory} from "./config/ConfigLog4J";
+import { logFactory } from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
-import { router } from "./routes/apiRouter";
+import { apiRouter } from "./routes/apiRouter";
 import { STATUS_CODES } from "http";
 import * as express from "express";
 import { Request as Req, Response as Res, NextFunction as Next } from "express";
 import { request } from "http";
+import { Logger } from "typescript-logging/dist/commonjs/log/standard/Logger";
+import { MongoDBConnection } from "./services/dbService";
 
-// connect database
-const mongoDB = require('./services/dbService');
+export class Server {
 
-const log = logFactory.getLogger('.mainApp');
+  private app: express.Application;
+  private log: Logger;
+  private port = this.normalizePort(Env.port || '3000');
+  private httpServer: http.Server;
+  private database: MongoDBConnection;
 
-const app = express();
+  public static boostrap(): Server {
+    return new Server();
+  }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, Env.webContentDir)));
+  private constructor() {
+    this.app = express();
+    this.config();
+    this.errorHandling();
+    this.connenctToDatabase();
+  }
 
-// default route
-app.get("/", (req: Req, res: Res, next: Next) => {
-  res.sendFile(path.join(__dirname, Env.indexHtml));
-});
+  private config() {
+    this.log = logFactory.getLogger('.server');;
+    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
+    this.app.set('port', this.port);
+    this.httpServer = http.createServer(this.app);
+    this.httpServer.listen(this.port);
+    this.httpServer.on('error', this.getErrorHandler());
+    this.httpServer.on('listening', this.getListeningHandler());
+    this.log.info('listening on ' + this.port);
+  }
 
-// here we set the routes
-app.use('/api', router);
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  const err: any = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+  private errorHandling() {
+    this.app.use(function (req: Req, res: Res, next: Next) {
+      const err: any = new Error('Not Found');
+      err.status = 404;
+      next(err);
+    });
 
-// error handler
-app.use(function (err: any, req: Req, res: Res, next: Next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  // render the error page
-  res.status(err.status || 500);
-  res.send({ message: 'Error - Not Found', statusCode: 404 })
-});
+    this.app.use(function (err: any, req: Req, res: Res, next: Next) {
+      // set locals, only providing error in development
+      res.locals.message = err.message;
+      res.locals.error = req.app.get('env') === 'development' ? err : {};
+      // render the error page
+      res.status(err.status || 500);
+      res.send({ message: 'Error - Not Found', statusCode: 404 })
+    });
+  }
 
-/**
- * Get port from environment and store in Express.
- */
+  private setRoutes() {
+    // default route
+    this.app.get("/", (req: Req, res: Res, next: Next) => {
+      res.sendFile(path.join(__dirname, Env.indexHtml));
+    });
 
-const port = normalizePort(Env.port || '3000');
-app.set('port', port);
+    this.app.use('/api', apiRouter);
 
-/**
- * Create HTTP server.
- */
-const server = http.createServer(app);
+  }
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-log.info('listening on ' + port);
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+  private connenctToDatabase() {
+    this.database = new MongoDBConnection();
+  }
 
-/**
+  /**
  * Normalize a port into a number, string, or false.
  */
-function normalizePort(val: string | number) {
-  const port = parseInt(val as string, 10);
+  private normalizePort(val: string | number) {
+    const port = parseInt(val as string, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
+    if (isNaN(port)) {
+      // named pipe
+      return val;
+    }
+
+    if (port >= 0) {
+      // port number
+      return port;
+    }
+
+    return false;
   }
 
-  if (port >= 0) {
-    // port number
-    return port;
+  /**
+   * Event listener for HTTP server "error" event.
+   */
+  private getErrorHandler() {
+    let log = this.log;
+    let port = this.port;
+    // do not add this  in the handler, since the "this" changes depending on the caller
+    return (error: any) => {
+      if (error.syscall !== 'listen') {
+        throw error;
+      }
+
+      const bind = typeof port === 'string'
+        ? 'Pipe ' + port
+        : 'Port ' + port;
+
+      // handle specific listen errors with friendly messages
+      switch (error.code) {
+        case 'EACCES':
+          log.error(bind + ' requires elevated privileges');
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          log.error(bind + ' is already in use');
+          process.exit(1);
+          break;
+        default:
+          throw error;
+      }
+    }
   }
 
-  return false;
+  private getListeningHandler() {
+    let httpServer = this.httpServer;
+    return () => {
+      const addr = httpServer.address();
+      const bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    }
+  }
+
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-function onError(error: any) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      log.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      log.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-}
-
-
-module.exports = app;
+Server.boostrap();
