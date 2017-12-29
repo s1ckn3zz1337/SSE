@@ -10,6 +10,7 @@ import {User} from "../objects/User";
 import {KeyRing} from "../objects/Keyring";
 import {KeyEntity} from "../objects/Model";
 import {runInNewContext} from "vm";
+import {KeyRingDocument} from "../database/schemes";
 
 const log = logFactory.getLogger(".dbService.ts");
 
@@ -34,7 +35,7 @@ export function getUser(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
-                const user = new User(response[0]._id, response[0].username, response[0].password);
+                let user = new User(response[0]._id, response[0].username, response[0].password);
                 return resolve(user); // return first elem as this should be the matched user
             }
             log.error(`Could not find user with the username ${username}`);
@@ -78,8 +79,37 @@ export function deleteUser(data: User) {
 
 };
 
+export function getKeyRing(id: string) {
+    return new Promise<KeyRing>((resolve, reject) => {
+        scheme.KeyRing.findById(id, (err: any, res: scheme.KeyRingDocument) => {
+            if (err) {
+                return reject(err);
+            } else if (!res) {
+                return reject("No KeyRing found");
+            } else {
+                return resolve(KeyRing.getFromDocument([res])[0]);
+            }
+        });
+    });
+}
+
+/** TODO keyRing and key should probably both have a name and a description? */
+export function createNewKeyRing(data: KeyRing): Promise<KeyRing> {
+    const newKeyRing = new scheme.KeyRing({
+        description: data.description,
+        keyEntites: data.keyEntites
+    });
+
+    return new Promise((resolve, reject) => {
+        newKeyRing.save().then(response => {
+            data.id = response.id;
+            resolve(data);
+        });
+    });
+}
+
 export function deleteKeyRing(data: KeyRing) {
-    scheme.KeyRing.findByIdAndRemove(data.schemaId).then(res => {
+    scheme.KeyRing.findByIdAndRemove(data.id).then(res => {
         return true;
     }).catch(err => {
         log.error('Error while removing KeyRing' + err);

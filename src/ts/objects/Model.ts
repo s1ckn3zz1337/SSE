@@ -3,7 +3,7 @@ export * from "./User";
 export * from "./KeyRing";
 export * from "./KeyEntity";
 
-import { KeyEntity } from "./KeyEntity";
+import {KeyEntity} from "./KeyEntity";
 
 export interface IUser {
     id: string,
@@ -12,14 +12,14 @@ export interface IUser {
 }
 
 export interface IKeyRing {
-    schemaId: string,
-    descr: string,
+    id: string,
+    description: string,
     keyEntites: KeyEntity[]
 }
 
 export interface IKeyEntity {
-    keyId : string,
-    keyName: string, 
+    id: string,
+    keyName: string,
     keyEncryptedPassword: string,
     keyDescription: string,
     keyURL: string

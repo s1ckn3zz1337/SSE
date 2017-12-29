@@ -23,10 +23,12 @@ export interface KeyEntityDocument extends Document {
 /** Key Ring */
 export const keyRingSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
+    description: String,
     keyEntites: [keyEntitySchema]
 });
 export interface KeyRingDocument extends Document {
     schemaId: Schema.Types.ObjectId,
+    description: string,
     keyEntites: KeyEntityDocument[]
 }
 

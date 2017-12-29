@@ -1,15 +1,15 @@
 import * as path from "path";
-import { Env } from "./config/config";
-import { logFactory } from "./config/ConfigLog4J";
+import {Env} from "./config/config";
+import {logFactory} from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
-import { apiRouter } from "./routes/apiRouter";
-import { STATUS_CODES } from "http";
+import {apiRouter} from "./routes/apiRouter";
+import {STATUS_CODES} from "http";
 import * as express from "express";
-import { Request as Req, Response as Res, NextFunction as Next } from "express";
-import { request } from "http";
-import { Logger } from "typescript-logging/dist/commonjs/log/standard/Logger";
-import * as dbService  from "./services/dbService";
+import {Request as Req, Response as Res, NextFunction as Next} from "express";
+import {request} from "http";
+import {Logger} from "typescript-logging/dist/commonjs/log/standard/Logger";
+import * as dbService from "./services/dbService";
 
 const log = logFactory.getLogger('.server');
 
@@ -33,7 +33,7 @@ export class Server {
 
   private config() {
     this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(bodyParser.urlencoded({extended: false}));
     this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
     this.app.set('port', this.port);
     this.httpServer = http.createServer(this.app);
