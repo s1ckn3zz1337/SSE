@@ -3,12 +3,14 @@ const buildDir = "./build/";
 const resources = "src/resources/**/*.*";
 const jsFiles = "src/js/**/*.js";
 const htmlFiles = "src/html/**/*.html";
+const sourcemaps = require("gulp-sourcemaps");
 
 var del = require("del");
 var gulp = require("gulp");
 var ts = require("gulp-typescript");
 
 var tsProject = ts.createProject({
+    outDir: "build",
     noImplicitAny: true,
     module: "commonjs",
     target: "ES2017"
@@ -28,9 +30,10 @@ gulp.task("default", function () {
 gulp.task("deploy", deploy);
 
 function deploy() {
-    gulp.src(tsFiles)
+    gulp.src(tsFiles, { sourcemaps: true })
+        .pipe(sourcemaps.init())
         .pipe(tsProject())
-        .js.pipe(gulp.dest(buildDir));
+        .js.pipe(sourcemaps.write()).pipe(gulp.dest(buildDir));
     gulp.src(resources)
         .pipe(gulp.dest(buildDir));
     gulp.src(jsFiles)
