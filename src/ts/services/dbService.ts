@@ -60,9 +60,10 @@ const registerUser = (data: User) :Promise<User> => {
                 log.error('Failed creating User - already exists');
                 return null;
             }
-            newUser.save();
-            log.info('User ' + newUser.username + ' created');
-            return resolve(getUser(data.username));
+            newUser.save().then(response => {
+                data.id = response.id;
+                resolve(data);
+            });
         }).catch(err => {
             log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
             return reject(err);
