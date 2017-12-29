@@ -14,18 +14,16 @@ var tsProject = ts.createProject({
     target: "ES2017"
 });
 
-gulp.task("clean", function () {
-    return del([buildDir]);
-});
 
-gulp.task("default", ["deploy"], function () {
+gulp.task("default", function () {
+    del([buildDir]);
     gulp.watch(tsFiles, ["deploy"]);
     gulp.watch(resources, ["deploy"]);
     gulp.watch(htmlFiles, ["deploy"]);
 });
 
 
-gulp.task("deploy", ["clean"], function () {
+gulp.task("deploy", function () {
     gulp.src(tsFiles)
         .pipe(tsProject())
         .js.pipe(gulp.dest(buildDir));
