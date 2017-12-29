@@ -48,7 +48,6 @@ const getUser = (username: string): Promise<User> => {
 };
 
 const registerUser = (data: User) :Promise<User> => {
-
     const newUser = new scheme.User({
         username: data.username,
         password: data.password,
@@ -58,11 +57,11 @@ const registerUser = (data: User) :Promise<User> => {
         scheme.User.find({'username': data.username}).then(response => {
             if (response && response.length > 0) {
                 log.error('Failed creating User - already exists');
-                return null;
+                return reject('User already exists');
             }
             newUser.save().then(response => {
                 data.id = response.id;
-                resolve(data);
+                return resolve(data);
             });
         }).catch(err => {
             log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
