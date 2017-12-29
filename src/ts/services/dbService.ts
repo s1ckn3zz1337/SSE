@@ -6,6 +6,9 @@ import * as scheme from '../database/schemes';
 import { error } from "util";
 import * as mongoose from "mongoose";
 import { MongoError } from "mongodb";
+import { User } from "../objects/User";
+import { KeyRing } from "../objects/Keyring";
+import { KeyEntity } from "../objects/Model";
 
 export class MongoDBConnection {
 
@@ -32,22 +35,90 @@ export class MongoDBConnection {
 }
 
 // database services
-export class DbService<T> {
+export class DbService {
 
-    public save(data: T) {
-        // so something here
-        // then return promise
+    private log: Logger; 
+
+    public getUser(data:User) {
+        let log = logFactory.getLogger(".mongoDBConnection");
+        this.log = log;
+
+        scheme.User.find({ 'username' : data.username }, function (err,user) {
+            if (err) log.error('Error while loading User' + err);
+            else {
+                return user;
+            }
+        });
     }
 
-    public load(data: T) {
+    public registerUser(data:User) {
+        let log = logFactory.getLogger(".mongoDBConnection");
+        this.log = log;
+
+        var myUser = new scheme.User({
+            username: data.username,
+            password: data.password,
+        });
+
+        scheme.User.find({ '_id' : data.username }, function (err, user) {
+            if (user.length){
+                log.error('Failed creating User - already exists');
+            } else {
+                myUser.save();
+                log.info('User ' + myUser.username + ' created');
+            }
+        });
+
+        // second query only for returning created user object with database id - delete if not needed
+        scheme.User.find({ 'username' : myUser.username }, function (err,user) {
+            if (err) log.error('Error while loading User' + err);
+            else {
+                return user;
+            }
+        });
+    }
+
+    public deleteUser(data:User) {
+        let log = logFactory.getLogger(".mongoDBConnection");
+        this.log = log;
+
+        scheme.User.findByIdAndRemove(data.id, function (err, res) {
+            if (err) log.error('Error while removing User' + err);
+            else {
+                return true;
+            }
+        });
+    }
+
+    public saveKeyRing(data:KeyRing) {
+
+    }
+    
+    public deleteKeyRing(data:KeyRing) {
+        let log = logFactory.getLogger(".mongoDBConnection");
+        this.log = log;
+
+        scheme.KeyRing.findByIdAndRemove(data.schemaId, function (err, res) {
+            if (err) log.error('Error while removing KeyRing' + err);
+            else {
+                return true;
+            }
+        });
+    }
+
+    public saveKeyRingEntity(data:KeyEntity) {
 
     }
 
-    public create(data: T) {
+    public deleteKeyEntity(data:KeyEntity) {
+        let log = logFactory.getLogger(".mongoDBConnection");
+        this.log = log;
 
-    }
-
-    public delete(data: T) {
-
+        scheme.KeyEntity.findByIdAndRemove(data.keyId, function (err, res) {
+            if (err) log.error('Error while removing KeyEntity' + err);
+            else {
+                return true;
+            }
+        });
     }
 };
