@@ -13,7 +13,7 @@ import {runInNewContext} from "vm";
 
 const log = logFactory.getLogger(".dbService.ts");
 
-export const initDBConnection = () => {
+export function initDBConnection() {
     mongoose.connect('mongodb://' +
         Env.mongoDB.user + ':' +
         Env.mongoDB.password + '@' +
@@ -30,8 +30,7 @@ export const initDBConnection = () => {
     );
 };
 
-
-export const getUser = (username: string): Promise<User> => {
+export function getUser(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
@@ -47,8 +46,7 @@ export const getUser = (username: string): Promise<User> => {
     });
 };
 
-export const registerUser = (data: User): Promise<User> => {
-
+export function registerUser(data: User): Promise<User> {
     const newUser = new scheme.User({
         username: data.username,
         password: data.password,
@@ -71,7 +69,7 @@ export const registerUser = (data: User): Promise<User> => {
     });
 };
 
-export const deleteUser = (data: User) => {
+export function deleteUser(data: User) {
     scheme.User.findByIdAndRemove(data.id).then(res => {
         return true;
     }).catch(err => {
@@ -80,7 +78,7 @@ export const deleteUser = (data: User) => {
 
 };
 
-export const deleteKeyRing = (data: KeyRing) => {
+export function deleteKeyRing(data: KeyRing) {
     scheme.KeyRing.findByIdAndRemove(data.schemaId).then(res => {
         return true;
     }).catch(err => {
@@ -88,7 +86,7 @@ export const deleteKeyRing = (data: KeyRing) => {
     });
 };
 
-export const deleteKeyEntity = (data: KeyEntity) => {
+export function deleteKeyEntity(data: KeyEntity) {
     scheme.KeyEntity.findByIdAndRemove(data.keyId).then(res => {
         return true
     }).catch(err => {
