@@ -27,7 +27,6 @@ export interface KeyEntityDocument extends Document {
 
 
 export const keyEntitySchema: Schema = new Schema({
-    _id: Schema.Types.ObjectId,
     keyName: String,
     keyEncryptedPassword: String,
     keyDescription: String,
@@ -35,12 +34,10 @@ export const keyEntitySchema: Schema = new Schema({
 });
 
 export const keyRingSchema: Schema = new Schema({
-    _id: Schema.Types.ObjectId,
     keyEntites: [keyEntitySchema]
 });
 
 export const userSchema: Schema = new Schema({
-    _id: Schema.Types.ObjectId,
     username: String,
     password: String,
     keyrings: [keyRingSchema]
@@ -48,4 +45,4 @@ export const userSchema: Schema = new Schema({
 
 export const KeyEntity = model<KeyEntityDocument>('KeyEntity', keyEntitySchema);
 export const KeyRing = model<KeyRingDocument>('KeyRing', keyRingSchema);
-export const User = model<UserDocument>('userSchema', userSchema);
+export const User = model<UserDocument>('User', userSchema);
