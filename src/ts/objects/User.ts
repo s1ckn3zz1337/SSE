@@ -16,11 +16,13 @@ export class User implements IUser {
     }
 
     register() {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
            dbService.registerUser(this).then(response => {
                 this.id = response.id;
                 return resolve(this);
-            });
+            }).catch(err =>{
+                   return reject(err);
+           });
         });
 
     }
