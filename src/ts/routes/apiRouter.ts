@@ -1,12 +1,12 @@
 import * as Express from "express";
-import { Response, Request, NextFunction } from "express";
+import { Response as Res, Request as Req, NextFunction as Next } from "express";
 import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
 import { User } from "../objects/User";
 
 export const apiRouter = Express.Router();
 
-apiRouter.post('/login', (req: Request, res: Response, next: NextFunction) => {
+apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
     AuthService.isAuthenticated('example data').then((result) => {
         res.send(result)
     }).catch(err => {
@@ -15,7 +15,7 @@ apiRouter.post('/login', (req: Request, res: Response, next: NextFunction) => {
     })
 });
 
-apiRouter.post('/register', (req: Request, res: Response) => {
+apiRouter.post('/register', (req: Req, res: Res) => {
     // dummy impl
     const body = req.body || {};
     const username = body.username;
@@ -39,21 +39,22 @@ apiRouter.use('/admin', GateKeeper.gateKeeperAdmin);
 apiRouter.use('/user', GateKeeper.gateKeeperUser);
 
 
-apiRouter.get('/user/:uid/keyring', (req: Request, res: Response, next: NextFunction) => {
+apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     // show keyring for the user with the user id
     const userId = req.params['uid'];
     res.send('you are a user! with the id' + userId);
 });
 
-apiRouter.post('/user/:uid/keyring', (req: Request, res: Response) => {
+apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
     // create and validate new keyring here
 });
 
-apiRouter.post('/user/:uid/keyring/:kid', (req: Request, res: Response) => {
+apiRouter.post('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
     // create and validate new pass for the desired keyring
+    req.body
 
 });
 
-apiRouter.get('/admin', (req: Request, res: Response, next: NextFunction) => {
+apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     res.send('you are an admin!');
 });
