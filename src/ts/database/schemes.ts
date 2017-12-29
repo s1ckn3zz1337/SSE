@@ -25,7 +25,7 @@ export interface KeyEntityDocument extends Document {
 /** TODO sync schemas and interfaces */
 
 
-export var keyEntitySchema: Schema = new Schema({
+export const keyEntitySchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     keyName: String,
     keyEncryptedPassword: String,
@@ -33,19 +33,18 @@ export var keyEntitySchema: Schema = new Schema({
     keyURL: String
 });
 
-export var keyRingSchema: Schema = new Schema({
+export const keyRingSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     keyEntites: [keyEntitySchema]
 });
 
-export var userSchema: Schema = new Schema({
+export const userSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
     username: String,
-    email: String,
     password: String,
     keyrings: [keyRingSchema]
 });
 
 export const KeyEntity = model<KeyEntityDocument>('KeyEntity', keyEntitySchema);
 export const KeyRing = model<KeyRingDocument>('KeyRing', keyRingSchema);
-export const UserSchema = model<UserDocument>('userSchema', userSchema);
+export const User = model<UserDocument>('userSchema', userSchema);
