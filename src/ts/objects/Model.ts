@@ -18,7 +18,9 @@ export interface IKeyRing {
 }
 
 export interface IKeyEntity {
-    keyName: string, keyEncryptedPassword: string,
+    keyId : string,
+    keyName: string, 
+    keyEncryptedPassword: string,
     keyDescription: string,
     keyURL: string
 }
