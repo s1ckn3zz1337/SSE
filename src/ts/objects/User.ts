@@ -16,19 +16,11 @@ export class User implements IUser {
     }
 
     register() {
-        return new Promise((resolve, reject) => {
-            const registeredUser = dbService.registerUser(this).then(response => {
-                if(response.hasOwnProperty('id')){
-                }
-                this.id = response.hasOwnProperty()
-            });
-            if (registeredUser) {
-                this.id = registeredUser.getPropertyValue('id');
-                log.debug(`created User with the ID: ${this.id}`);
+        return new Promise((resolve) => {
+           dbService.registerUser(this).then(response => {
+                this.id = response.id;
                 return resolve(this);
-            }
-            log.error('Could not register...');
-            return reject('did not work');
+            });
         });
 
     }
