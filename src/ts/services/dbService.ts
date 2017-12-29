@@ -57,11 +57,11 @@ export function registerUser(data: User): Promise<User> {
         scheme.User.find({'username': data.username}).then(response => {
             if (response && response.length > 0) {
                 log.error('Failed creating User - already exists');
-                return null;
+                return reject('User already exists');
             }
             newUser.save().then(response => {
                 data.id = response.id;
-                resolve(data);
+                return resolve(data);
             });
         }).catch(err => {
             log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
@@ -123,32 +123,4 @@ export function deleteKeyEntity(data: KeyEntity) {
         log.error(`Error while removing KeyEntity ${err}`);
         return null;
     });
-};
-
-// database services
-export class DbService {
-
-    public getUser(data: User) {
-
-
-    }
-
-    public registerUser(data: User) {
-
-    }
-
-    public deleteUser(data: User) {
-
-    }
-
-    public saveKeyRing(data: KeyRing) {
-
-    }
-
-
-    public saveKeyRingEntity(data: KeyEntity) {
-
-    }
-
-
 };
