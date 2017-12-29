@@ -97,32 +97,3 @@ const deleteKeyEntity = (data: KeyEntity) => {
 };
 
 export {getUser, registerUser, deleteUser, deleteKeyEntity, deleteKeyRing, initDBConnection};
-
-
-// database services
-export class DbService {
-
-    public getUser(data: User) {
-
-
-    }
-
-    public registerUser(data: User) {
-
-    }
-
-    public deleteUser(data: User) {
-
-    }
-
-    public saveKeyRing(data: KeyRing) {
-
-    }
-
-
-    public saveKeyRingEntity(data: KeyEntity) {
-
-    }
-
-
-};
