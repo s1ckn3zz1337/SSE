@@ -16,11 +16,12 @@ var tsProject = ts.createProject({
 
 
 gulp.task("default", function () {
-    del([buildDir]);
-    deploy();
-    gulp.watch(tsFiles, ["deploy"]);
-    gulp.watch(resources, ["deploy"]);
-    gulp.watch(htmlFiles, ["deploy"]);
+    del([buildDir]).then(() => {
+        deploy();
+        gulp.watch(tsFiles, ["deploy"]);
+        gulp.watch(resources, ["deploy"]);
+        gulp.watch(htmlFiles, ["deploy"]);
+    });
 });
 
 
