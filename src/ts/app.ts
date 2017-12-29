@@ -9,15 +9,15 @@ import * as express from "express";
 import { Request as Req, Response as Res, NextFunction as Next } from "express";
 import { request } from "http";
 import { Logger } from "typescript-logging/dist/commonjs/log/standard/Logger";
-import { MongoDBConnection } from "./services/dbService";
+import * as dbService  from "./services/dbService";
+
+const log = logFactory.getLogger('.server');
 
 export class Server {
 
   private app: express.Application;
-  private log: Logger;
   private port = this.normalizePort(Env.port || '3000');
   private httpServer: http.Server;
-  private database: MongoDBConnection;
 
   public static boostrap(): Server {
     return new Server();
@@ -32,7 +32,6 @@ export class Server {
   }
 
   private config() {
-    this.log = logFactory.getLogger('.server');;
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
     this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
@@ -41,7 +40,7 @@ export class Server {
     this.httpServer.listen(this.port);
     this.httpServer.on('error', this.getErrorHandler());
     this.httpServer.on('listening', this.getListeningHandler());
-    this.log.info('listening on ' + this.port);
+    log.info('listening on ' + this.port);
   }
 
   private errorHandling() {
@@ -50,7 +49,7 @@ export class Server {
     this.app.use((req: Req, res: Res, next: Next) => {
       toggleSimulation = !toggleSimulation;
       if (toggleSimulation) {
-        this.log.info("simulating error");
+        log.info("simulating error");
         const err: any = new Error('Not Found');
         err.status = 404;
         return next(err);
@@ -74,7 +73,7 @@ export class Server {
   }
 
   private connenctToDatabase() {
-    this.database = new MongoDBConnection();
+    dbService.initDBConnection();
   }
 
   /**
@@ -100,7 +99,6 @@ export class Server {
    * Event listener for HTTP server "error" event.
    */
   private getErrorHandler() {
-    let log = this.log;
     let port = this.port;
     // do not add this  in the handler, since the "this" changes depending on the caller
     return (error: any) => {

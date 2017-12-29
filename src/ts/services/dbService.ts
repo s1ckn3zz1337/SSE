@@ -1,110 +1,120 @@
 // import credentials from config
-import { Env } from "../config/config";
-import { logFactory } from "../config/ConfigLog4J";
-import { Logger } from "typescript-logging";
+import {Env} from "../config/config";
+import {logFactory} from "../config/ConfigLog4J";
+import {Logger} from "typescript-logging";
 import * as scheme from '../database/schemes';
-import { error } from "util";
+import {error} from "util";
 import * as mongoose from "mongoose";
-import { MongoError } from "mongodb";
-import { User } from "../objects/User";
-import { KeyRing } from "../objects/Keyring";
-import { KeyEntity } from "../objects/Model";
+import {MongoError} from "mongodb";
+import {User} from "../objects/User";
+import {KeyRing} from "../objects/Keyring";
+import {KeyEntity} from "../objects/Model";
+import {runInNewContext} from "vm";
 
 const log = logFactory.getLogger(".dbService.ts");
 
-export class MongoDBConnection {
-
-    private log: Logger;
-
-    constructor() {
-        mongoose.connect('mongodb://' +
-            Env.mongoDB.user + ':' +
-            Env.mongoDB.password + '@' +
-            Env.mongoDB.host + ':' +
-            Env.mongoDB.port + '/' +
-            Env.mongoDB.database, {
-                useMongoClient: true
-            }, function (err: MongoError) {
-                if (err) log.error('Error while creating mongoose connection' + err);
-                else {
-                    log.info('MongoDB connected!');
-                }
+const initDBConnection = () => {
+    mongoose.connect('mongodb://' +
+        Env.mongoDB.user + ':' +
+        Env.mongoDB.password + '@' +
+        Env.mongoDB.host + ':' +
+        Env.mongoDB.port + '/' +
+        Env.mongoDB.database, {
+            useMongoClient: true
+        }, function (err: MongoError) {
+            if (err) log.error('Error while creating mongoose connection' + err);
+            else {
+                log.info('MongoDB connected!');
             }
-        );
-    }
-}
+        }
+    );
+};
+
+
+const getUser = (username: string) => {
+    scheme.User.find({'username': username}).then(response => {
+        if (response && response.length > 0) {
+            return response[0]; // return first elem as this should be the matched user
+        }
+        log.error(`Could not find user with the username ${username}`);
+        return null;
+    });
+};
+
+const registerUser = (data: User) => {
+
+    const newUser = new scheme.User({
+        username: data.username,
+        password: data.password,
+    });
+
+    scheme.User.find({'username': data.username}).then(response => {
+        if (response && response.length > 0) {
+            log.error('Failed creating User - already exists');
+            return
+        }
+        newUser.save();
+        log.info('User ' + newUser.username + ' created');
+        return getUser(data.username);
+    }).catch(err => {
+        log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
+        return null;
+    });
+};
+
+const deleteUser = (data: User) => {
+    scheme.User.findByIdAndRemove(data.id).then(res => {
+        return true;
+    }).catch(err => {
+        log.error('Error while removing User' + err);
+    });
+
+};
+
+const deleteKeyRing = (data: KeyRing) => {
+    scheme.KeyRing.findByIdAndRemove(data.schemaId).then(res => {
+        return true;
+    }).catch(err => {
+        log.error('Error while removing KeyRing' + err);
+    });
+};
+
+const deleteKeyEntity = (data: KeyEntity) => {
+    scheme.KeyEntity.findByIdAndRemove(data.keyId).then(res => {
+        return true
+    }).catch(err => {
+        log.error(`Error while removing KeyEntity ${err}`);
+        return null;
+    });
+};
+
+export {getUser, registerUser, deleteUser, deleteKeyEntity, deleteKeyRing, initDBConnection};
+
 
 // database services
 export class DbService {
 
-    private log: Logger; 
+    public getUser(data: User) {
 
-    public getUser(data:User) {
-
-        scheme.User.find({ 'username' : data.username }, function (err,user) {
-            if (err) log.error('Error while loading User' + err);
-            else {
-                return user;
-            }
-        });
-    }
-
-    public registerUser(data:User) {
-        var myUser = new scheme.User({
-            username: data.username,
-            password: data.password,
-        });
-
-        scheme.User.find({ '_id' : data.username }, function (err, user) {
-            if (user.length){
-                log.error('Failed creating User - already exists');
-            } else {
-                myUser.save();
-                log.info('User ' + myUser.username + ' created');
-            }
-        });
-
-        // second query only for returning created user object with database id - delete if not needed
-        scheme.User.find({ 'username' : myUser.username }, function (err,user) {
-            if (err) log.error('Error while loading User' + err);
-            else {
-                return user;
-            }
-        });
-    }
-
-    public deleteUser(data:User) {
-        scheme.User.findByIdAndRemove(data.id, function (err, res) {
-            if (err) log.error('Error while removing User' + err);
-            else {
-                return true;
-            }
-        });
-    }
-
-    public saveKeyRing(data:KeyRing) {
-
-    }
-    
-    public deleteKeyRing(data:KeyRing) {
-        scheme.KeyRing.findByIdAndRemove(data.schemaId, function (err, res) {
-            if (err) log.error('Error while removing KeyRing' + err);
-            else {
-                return true;
-            }
-        });
-    }
-
-    public saveKeyRingEntity(data:KeyEntity) {
 
     }
 
-    public deleteKeyEntity(data:KeyEntity) {
-        scheme.KeyEntity.findByIdAndRemove(data.keyId, function (err, res) {
-            if (err) log.error('Error while removing KeyEntity' + err);
-            else {
-                return true;
-            }
-        });
+    public registerUser(data: User) {
+
     }
+
+    public deleteUser(data: User) {
+
+    }
+
+    public saveKeyRing(data: KeyRing) {
+
+    }
+
+
+    public saveKeyRingEntity(data: KeyEntity) {
+
+    }
+
+
 };
