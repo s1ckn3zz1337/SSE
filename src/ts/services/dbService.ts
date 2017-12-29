@@ -10,13 +10,13 @@ import { User } from "../objects/User";
 import { KeyRing } from "../objects/Keyring";
 import { KeyEntity } from "../objects/Model";
 
+const log = logFactory.getLogger(".dbService.ts");
+
 export class MongoDBConnection {
 
     private log: Logger;
 
     constructor() {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
         mongoose.connect('mongodb://' +
             Env.mongoDB.user + ':' +
             Env.mongoDB.password + '@' +
@@ -40,8 +40,6 @@ export class DbService {
     private log: Logger; 
 
     public getUser(data:User) {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
 
         scheme.User.find({ 'username' : data.username }, function (err,user) {
             if (err) log.error('Error while loading User' + err);
@@ -52,9 +50,6 @@ export class DbService {
     }
 
     public registerUser(data:User) {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
-
         var myUser = new scheme.User({
             username: data.username,
             password: data.password,
@@ -79,9 +74,6 @@ export class DbService {
     }
 
     public deleteUser(data:User) {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
-
         scheme.User.findByIdAndRemove(data.id, function (err, res) {
             if (err) log.error('Error while removing User' + err);
             else {
@@ -95,9 +87,6 @@ export class DbService {
     }
     
     public deleteKeyRing(data:KeyRing) {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
-
         scheme.KeyRing.findByIdAndRemove(data.schemaId, function (err, res) {
             if (err) log.error('Error while removing KeyRing' + err);
             else {
@@ -111,9 +100,6 @@ export class DbService {
     }
 
     public deleteKeyEntity(data:KeyEntity) {
-        let log = logFactory.getLogger(".mongoDBConnection");
-        this.log = log;
-
         scheme.KeyEntity.findByIdAndRemove(data.keyId, function (err, res) {
             if (err) log.error('Error while removing KeyEntity' + err);
             else {
