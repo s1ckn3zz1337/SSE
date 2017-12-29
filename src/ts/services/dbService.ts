@@ -31,34 +31,42 @@ const initDBConnection = () => {
 };
 
 
-const getUser = (username: string) => {
-    scheme.User.find({'username': username}).then(response => {
-        if (response && response.length > 0) {
-            return response[0]; // return first elem as this should be the matched user
-        }
-        log.error(`Could not find user with the username ${username}`);
-        return null;
+const getUser = (username: string): Promise<User> => {
+    return new Promise((resolve, reject) => {
+        scheme.User.find({'username': username}).then(response => {
+            if (response && response.length > 0) {
+                const user = new User(response[0]._id, response[0].username, response[0].password);
+                return resolve(user); // return first elem as this should be the matched user
+            }
+            log.error(`Could not find user with the username ${username}`);
+            return reject(new Error('could not find matching user'));
+        }).catch(err => {
+            log.error(JSON.stringify(err));
+            return reject(err);
+        });
     });
 };
 
-const registerUser = (data: User) => {
+const registerUser = (data: User) :Promise<User> => {
 
     const newUser = new scheme.User({
         username: data.username,
         password: data.password,
     });
 
-    scheme.User.find({'username': data.username}).then(response => {
-        if (response && response.length > 0) {
-            log.error('Failed creating User - already exists');
-            return
-        }
-        newUser.save();
-        log.info('User ' + newUser.username + ' created');
-        return getUser(data.username);
-    }).catch(err => {
-        log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
-        return null;
+    return new Promise((resolve, reject) => {
+        scheme.User.find({'username': data.username}).then(response => {
+            if (response && response.length > 0) {
+                log.error('Failed creating User - already exists');
+                return null;
+            }
+            newUser.save();
+            log.info('User ' + newUser.username + ' created');
+            return resolve(getUser(data.username));
+        }).catch(err => {
+            log.error(`Could not create user, something went wrong :( ${JSON.stringify(err)}`);
+            return reject(err);
+        });
     });
 };
 

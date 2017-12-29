@@ -3,9 +3,10 @@ import * as Models from "../objects/Model";
 
 /** interfaces */
 export interface UserDocument extends Document {
-    username: String,
+    _id: string,
+    username: string,
     email: String,
-    password: String,
+    password: string,
     keyrings: KeyRingDocument[]
 }
 
