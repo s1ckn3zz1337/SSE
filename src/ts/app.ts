@@ -28,6 +28,7 @@ export class Server {
     this.config();
     this.errorHandling();
     this.connenctToDatabase();
+    this.setRoutes();
   }
 
   private config() {
@@ -44,30 +45,32 @@ export class Server {
   }
 
   private errorHandling() {
-    this.app.use(function (req: Req, res: Res, next: Next) {
-      const err: any = new Error('Not Found');
-      err.status = 404;
-      next(err);
+    //simulate error at every second call
+    let toggleSimulation = true;
+    this.app.use((req: Req, res: Res, next: Next) => {
+      toggleSimulation = !toggleSimulation;
+      if (toggleSimulation) {
+        this.log.info("simulating error");
+        const err: any = new Error('Not Found');
+        err.status = 404;
+        return next(err);
+      } else {
+        return next();
+      }
     });
 
-    this.app.use(function (err: any, req: Req, res: Res, next: Next) {
+    this.app.use((err: any, req: Req, res: Res, next: Next) => {
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
       // render the error page
       res.status(err.status || 500);
-      res.send({ message: 'Error - Not Found', statusCode: 404 })
+      res.send('Error - Not Found');
     });
   }
 
   private setRoutes() {
-    // default route
-    this.app.get("/", (req: Req, res: Res, next: Next) => {
-      res.sendFile(path.join(__dirname, Env.indexHtml));
-    });
-
     this.app.use('/api', apiRouter);
-
   }
 
   private connenctToDatabase() {

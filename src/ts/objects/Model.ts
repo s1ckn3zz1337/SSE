@@ -22,3 +22,8 @@ export interface IKeyEntity {
     keyDescription: string,
     keyURL: string
 }
+
+export interface KeyPair {
+    public: string,
+    private: string
+}

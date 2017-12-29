@@ -3,6 +3,8 @@ import { Response as Res, Request as Req, NextFunction as Next } from "express";
 import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
 import { User } from "../objects/User";
+import { Keygen } from "../services/keygen/keygen";
+import { KeyPair } from "../objects/model"
 
 export const apiRouter = Express.Router();
 
@@ -46,15 +48,36 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
 });
 
 apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
+    let userId = getUserId(req);
+    let kid = getKeyRingId(req);
+    let ringName = getKeyRingName(req);
     // create and validate new keyring here
+    Keygen.generateNewRSAKey((key: KeyPair) => {
+        //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
+        let filename = getKeyRingName(req) + "-" + getKeyRingId(req) + "-" + "-keyring.pem";
+        res.attachment(filename);
+        //TODO store the public key on the server --> the user is able to add new keys to the ring without using his private key all the time [public key can be generated from private key, but key.public exists already]
+        res.send(key.private);
+    });
 });
 
 apiRouter.post('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
     // create and validate new pass for the desired keyring
-    req.body
-
 });
 
 apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     res.send('you are an admin!');
+    next();
 });
+
+function getUserId(req: Req): string {
+    return req.params['uid'];
+}
+
+function getKeyRingId(req: Req): string {
+    return req.params['kid'];
+}
+
+function getKeyRingName(req: Req): string {
+    return req.params['k-name'];
+}
