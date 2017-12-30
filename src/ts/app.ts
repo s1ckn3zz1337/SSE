@@ -79,6 +79,13 @@ export class Server {
 
   private setRoutes() {
     this.app.use('/api', apiRouter);
+    this.app.use('/', (req:Req, res:Res, next: Next) => {
+        if(req.session && req.session.username) {
+          res.redirect('/dashboard.html');
+        } else {
+          res.redirect('/index.html');
+        }
+    });
   }
 
   private connenctToDatabase() {
