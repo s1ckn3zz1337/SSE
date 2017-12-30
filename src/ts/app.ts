@@ -44,6 +44,7 @@ export class Server {
   }
 
   private errorHandling() {
+    /*
     //simulate error at every second call
     let toggleSimulation = true;
     this.app.use((req: Req, res: Res, next: Next) => {
@@ -56,7 +57,7 @@ export class Server {
         return next();
       }
     });
-
+    */
     this.app.use((err: any, req: Req, res: Res, next: Next) => {
       // set locals, only providing error in development
       res.locals.message = err.message;

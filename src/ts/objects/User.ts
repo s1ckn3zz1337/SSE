@@ -11,8 +11,12 @@ export class User implements IUser {
 
     public password: string;
 
-    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[]) {
-        this.password = saltHashPassword(password, username);
+    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], private fromdb:boolean) {
+        if(this.fromdb == false){
+            this.password = saltHashPassword(password, username);
+        }else{
+            this.password = password;
+        }
     }
 
     register() {
@@ -29,10 +33,24 @@ export class User implements IUser {
 
 
     login() {
-
+        return new Promise<User>((resolve, reject) => {
+            dbService.getUser(this.username).then(response => {
+                if (this._checkCredentials(response.password)) {
+                    this.id = response.id;
+                    this.keyrings = response.keyrings;
+                    return resolve(this);
+                }
+                log.error(`${this.username} passwords did not match`);
+                return reject(new Error('passwords not match'));
+            }).catch(err => {
+                log.error(`${this.username} wrong login: ${JSON.stringify(err)}`);
+                return reject(err);
+            })
+        });
     }
 
-    checkCredentials() {
+    _checkCredentials(password: string) {
+        return password === this.password
         // do some logic here, aka prepare data
     }
 

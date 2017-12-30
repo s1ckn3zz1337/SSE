@@ -5,35 +5,43 @@ import * as GateKeeper from "../handler/gatekeeper";
 import {User} from "../objects/User";
 import {Keygen} from "../services/keygen/keygen";
 import {KeyPair} from "../objects/model"
+import {logFactory} from "../config/ConfigLog4J";
+const log = logFactory.getLogger('.apiRouter.ts');
 
 export const apiRouter = Express.Router();
 
+apiRouter.use('/login', verifyRequestParameter);
+
 apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
-    AuthService.isAuthenticated('example data').then((result) => {
-        res.send(result)
-    }).catch(err => {
+    const username = getUsername(req);
+    const password = getPassword(req);
+    const email = getEmail(req);
+    log.debug(`/login req: ${username} pwd: ${password} email: ${email}`);
+    const user = new User(undefined, username, password, email, [], false);
+    log.debug(`/login req: user: ${JSON.stringify(user)}`);
+    user.login().then( user => {
+        res.send(user);
+    }).catch( err => {
+        log.error(`/login error: ${JSON.stringify(err)}`);
         res.statusCode = 403;
-        res.send(err)
-    })
+        res.send({statusCode: 403, message: 'could not login :(', err: err})
+    });
 });
 
+apiRouter.use('/register', verifyRequestParameter);
+
 apiRouter.post('/register', (req: Req, res: Res) => {
-    // dummy impl
-    let username = getUsername(req);
-    let password = getPassword(req);
-    let email = getEmail(req);
-    if (username && password) {
-        let user = new User(undefined, username, password, email, []);
-        user.register().then(data => {
-            res.send({statusCode: 201, message: 'Successfully registered!', id: data.id});
-        }).catch(error => {
-            res.statusCode = 500;
-            res.send({statusCode: 500, message: 'Internal Server error', error: error});
-        })
-    } else {
-        res.statusCode = 400;
-        res.send({statusCode: 400, message: 'Cannot process request, missing data...'})
-    }
+    const username = getUsername(req);
+    const password = getPassword(req);
+    const email = getEmail(req);
+    const user = new User(undefined, username, password, email, [], false);
+    user.register().then(data => {
+        log.info(JSON.stringify(data));
+        res.send({statusCode: 201, message: 'Successfully registered!', id: data.id});
+    }).catch(error => {
+        res.statusCode = 500;
+        res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    })
 });
 
 // we could also use a new router here for better route managment
@@ -70,16 +78,24 @@ apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     next();
 });
 
+function verifyRequestParameter(req: Req, res: Res, next: Next) {
+    if (getUsername(req) && getPassword(req) && getEmail(req)) {
+        return next();
+    }
+    res.statusCode = 400;
+    return res.send({statusCode: 400, message: 'missing request parameter'});
+}
+
 function getUsername(req: Req): string {
-    return req.params["username"];
+    return req.body["username"];
 }
 
 function getPassword(req: Req): string {
-    return req.params["password"];
+    return req.body["password"];
 }
 
 function getEmail(req: Req): string {
-    return req.params["email"];
+    return req.body["email"];
 }
 
 function getUserId(req: Req): string {

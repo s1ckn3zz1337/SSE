@@ -11,6 +11,7 @@ import {KeyRing} from "../objects/KeyRing";
 import {KeyEntity} from "../objects/Model";
 import {runInNewContext} from "vm";
 import {KeyRingDocument} from "../database/schemes";
+import {reporter} from "gulp-typescript";
 
 const log = logFactory.getLogger(".dbService.ts");
 
@@ -35,7 +36,9 @@ export function getUser(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
-                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings))); // return first elem as this should be the matched user
+                //const user = new User(response[0]._id, response[0].username, response[0].password, response[0].email, [], true);
+                //return resolve(user);
+                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings), true)); // return first elem as this should be the matched user
             } else {
                 log.error(`Could not find user with the username ${username}`);
                 return reject(new Error('could not find matching user'));
@@ -61,6 +64,7 @@ export function registerUser(data: User): Promise<User> {
             }
             newUser.save().then(response => {
                 data.id = response.id;
+                log.info(JSON.stringify(response));
                 return resolve(data);
             });
         }).catch(err => {

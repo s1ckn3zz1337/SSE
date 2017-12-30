@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
-
+import {logFactory} from "../config/ConfigLog4J";
+const log = logFactory.getLogger('.cryptoService.ts');
 /**
  * hash password with sha512.
  * @function
@@ -12,8 +13,9 @@ const sha512 = function (password: string, salt: string) {
     return hash.digest('hex');
 };
 
-export function saltHashPassword(userpassword: string, username: string) {
-    const salt = username; /** use username as salt for the hash */
-    return sha512(userpassword, username);
+export function saltHashPassword(userpassword: string, username: string){
+    log.info('name: ' + username + 'password: ' + userpassword);
+    const sha513 = sha512(userpassword, username);
+    return sha513;
 }
 
