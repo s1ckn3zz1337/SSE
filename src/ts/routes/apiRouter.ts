@@ -1,10 +1,11 @@
 import * as Express from "express";
+import * as session from "express-session";
 import {Response as Res, Request as Req, NextFunction as Next} from "express";
 import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
 import {User} from "../objects/User";
 import {Keygen} from "../services/keygen/keygen";
-import {KeyPair} from "../objects/model"
+import {KeyPair} from "../objects/Model"
 import {logFactory} from "../config/ConfigLog4J";
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -20,6 +21,8 @@ apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
     const user = new User(undefined, username, password, email, [], false);
     log.debug(`/login req: user: ${JSON.stringify(user)}`);
     user.login().then( user => {
+        req.session.userId = user.id;
+        req.session.username = user.username;
         res.send(user);
     }).catch( err => {
         log.error(`/login error: ${JSON.stringify(err)}`);
