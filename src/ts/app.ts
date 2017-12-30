@@ -4,12 +4,9 @@ import {logFactory} from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 import {apiRouter} from "./routes/apiRouter";
-import {STATUS_CODES} from "http";
 import * as express from "express";
 import * as session from "express-session";
 import {Request as Req, Response as Res, NextFunction as Next} from "express";
-import {request} from "http";
-import {Logger} from "typescript-logging/dist/commonjs/log/standard/Logger";
 import * as dbService from "./services/dbService";
 
 const log = logFactory.getLogger('.server');
