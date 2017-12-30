@@ -13,7 +13,7 @@ GET - /
 ```
 * Login User
 ```
-POST - /login [name, password]
+POST - /login [username, password]
 ```
 * Register Interface
 ```
@@ -21,7 +21,7 @@ GET - /register
 ```
 * Create new User
 ```
-POST - /register [name, email, password]
+POST - /register [username, email, password]
 ```
 * Show Keyring
 ```

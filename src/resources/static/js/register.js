@@ -15,7 +15,7 @@ $(function () {
         }
         else
         {
-            alert("Eingegebene Passwörter stimmen nicht überein");
+            alert("Eingegebene Passwoerter stimmen nicht ueberein");
         }
 
         e.preventDefault();
