@@ -8,6 +8,7 @@ $(function () {
         {
             $.post('/register', register.serialize(), function (data) {
                 alert(data);
+                window.location.href = 'login.html';
             }).fail(function () {
                 alert('Fehler');
             });
