@@ -6,6 +6,7 @@ import * as http from "http";
 import {apiRouter} from "./routes/apiRouter";
 import {STATUS_CODES} from "http";
 import * as express from "express";
+import * as session from "express-session";
 import {Request as Req, Response as Res, NextFunction as Next} from "express";
 import {request} from "http";
 import {Logger} from "typescript-logging/dist/commonjs/log/standard/Logger";
@@ -35,6 +36,11 @@ export class Server {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({extended: false}));
     this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
+    this.app.use(session({
+        secret: 'adfiSHDFuhas7',
+        resave: false,
+        saveUninitialized: true
+    }));
     this.app.set('port', this.port);
     this.httpServer = http.createServer(this.app);
     this.httpServer.listen(this.port);

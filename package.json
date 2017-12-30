@@ -8,6 +8,7 @@
     "test": "mocha -r ts-node/register src/ts/test/**/**Test.ts"
   },
   "dependencies": {
+    "@types/express-session": "^1.15.6",
     "async": "~2.2.0",
     "body-parser": "~1.16.0",
     "debug": "~2.6.0",
