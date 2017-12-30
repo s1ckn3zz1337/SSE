@@ -1,10 +1,10 @@
 import * as Express from "express";
-import { Response as Res, Request as Req, NextFunction as Next } from "express";
+import {Response as Res, Request as Req, NextFunction as Next} from "express";
 import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
-import { User } from "../objects/User";
-import { Keygen } from "../services/keygen/keygen";
-import { KeyPair } from "../objects/model"
+import {User} from "../objects/User";
+import {Keygen} from "../services/keygen/keygen";
+import {KeyPair} from "../objects/model"
 
 export const apiRouter = Express.Router();
 
@@ -19,20 +19,20 @@ apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
 
 apiRouter.post('/register', (req: Req, res: Res) => {
     // dummy impl
-    const body = req.body || {};
-    const username = body.username;
-    const password = body.password;
+    let username = getUsername(req);
+    let password = getPassword(req);
+    let email = getEmail(req);
     if (username && password) {
-        const user = new User("", username, password);
+        let user = new User(undefined, username, password, email, []);
         user.register().then(data => {
-            res.send({ statusCode: 201, message: 'Successfully registered!', id: user.id });
+            res.send({statusCode: 201, message: 'Successfully registered!', id: data.id});
         }).catch(error => {
             res.statusCode = 500;
-            res.send({ statusCode: 500, message: 'Internal Server error', error: error });
+            res.send({statusCode: 500, message: 'Internal Server error', error: error});
         })
     } else {
         res.statusCode = 400;
-        res.send({ statusCode: 400, message: 'Cannot process request, missing data...' })
+        res.send({statusCode: 400, message: 'Cannot process request, missing data...'})
     }
 });
 
@@ -69,6 +69,18 @@ apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     res.send('you are an admin!');
     next();
 });
+
+function getUsername(req: Req): string {
+    return req.params["username"];
+}
+
+function getPassword(req: Req): string {
+    return req.params["password"];
+}
+
+function getEmail(req: Req): string {
+    return req.params["email"];
+}
 
 function getUserId(req: Req): string {
     return req.params['uid'];

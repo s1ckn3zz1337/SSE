@@ -8,13 +8,15 @@ import {KeyEntity} from "./KeyEntity";
 export interface IUser {
     id: string,
     username: string,
-    password: string
+    email: string,
+    password: string,
+    keyrings: IKeyRing[]
 }
 
 export interface IKeyRing {
     id: string,
     description: string,
-    keyEntites: KeyEntity[]
+    keyEntites: IKeyEntity[]
 }
 
 export interface IKeyEntity {

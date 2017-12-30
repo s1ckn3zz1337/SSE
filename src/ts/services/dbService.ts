@@ -7,7 +7,7 @@ import {error} from "util";
 import * as mongoose from "mongoose";
 import {MongoError} from "mongodb";
 import {User} from "../objects/User";
-import {KeyRing} from "../objects/Keyring";
+import {KeyRing} from "../objects/KeyRing";
 import {KeyEntity} from "../objects/Model";
 import {runInNewContext} from "vm";
 import {KeyRingDocument} from "../database/schemes";
@@ -35,11 +35,11 @@ export function getUser(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
-                let user = new User(response[0]._id, response[0].username, response[0].password);
-                return resolve(user); // return first elem as this should be the matched user
+                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, response[0].keyrings)); // return first elem as this should be the matched user
+            } else {
+                log.error(`Could not find user with the username ${username}`);
+                return reject(new Error('could not find matching user'));
             }
-            log.error(`Could not find user with the username ${username}`);
-            return reject(new Error('could not find matching user'));
         }).catch(err => {
             log.error(JSON.stringify(err));
             return reject(err);
@@ -101,26 +101,83 @@ export function createNewKeyRing(data: KeyRing): Promise<KeyRing> {
     });
 
     return new Promise((resolve, reject) => {
-        newKeyRing.save().then(response => {
-            data.id = response.id;
+        newKeyRing.save().then(resolved => {
+            data.id = resolved.id;
             resolve(data);
+        }, rejected => {
+            reject(rejected);
         });
     });
 }
 
+export function addExistingKeyRing(user: User, data: KeyRing): Promise<KeyRing> {
+    return new Promise<KeyRing>((resolved, rejected) => {
+        scheme.User.findByIdAndUpdate({'_id': user.id}, {$push: {keyrings: data}}, {"new": true}, (err, result) => {
+            if (result) {
+                return resolved(data);
+            } else {
+                log.info("Could not update keyRing of user " + err);
+                return rejected(err);
+            }
+        });
+    });
+}
+
+export function addNewKeyRing(user: User, data: KeyRing): Promise<KeyRing> {
+    return new Promise<KeyRing>((resolved, rejected) => {
+        createNewKeyRing(data).then(fulfilled => {
+            addExistingKeyRing(user, fulfilled).then(resolve => {
+                resolved(resolve);
+            }, reject => {
+                rejected(reject);
+            });
+        }, reject => {
+            log.info("Could not create new keyRing to update " + reject);
+            rejected(undefined);
+        });
+    });
+};
+
 export function deleteKeyRing(data: KeyRing) {
-    scheme.KeyRing.findByIdAndRemove(data.id).then(res => {
-        return true;
-    }).catch(err => {
-        log.error('Error while removing KeyRing' + err);
+    return new Promise((resolve, reject) => {
+        scheme.KeyRing.findByIdAndRemove(data.id, (err, res) => {
+            if (res) {
+                return resolve(res);
+            } else {
+                return reject(err);
+            }
+        });
+    });
+};
+
+export function addKeyEntity(keyRing: KeyRing, keyEntity: KeyEntity) {
+    const newKeyEntity = new scheme.KeyEntity({
+        keyName: keyEntity.keyName,
+        keyEncryptedPassword: keyEntity.keyEncryptedPassword,
+        keyDescription: keyEntity.keyDescription,
+        keyURL: keyEntity.keyURL
+    });
+    return new Promise((resolve, reject) => {
+        scheme.KeyRing.update({'_id': keyRing.id}, {$push: {keyEntites: newKeyEntity}}, {
+            safe: true,
+            multi: true
+        }).then(res => {
+            log.info('KeyEntity created ' + newKeyEntity.keyName);
+            return resolve(true);
+        }).catch(err => {
+            log.error('Failed creating new KeyEntity ' + newKeyEntity.keyName);
+            return reject(err);
+        });
     });
 };
 
 export function deleteKeyEntity(data: KeyEntity) {
-    scheme.KeyEntity.findByIdAndRemove(data.keyId).then(res => {
-        return true
-    }).catch(err => {
-        log.error(`Error while removing KeyEntity ${err}`);
-        return null;
+    return new Promise((resolve, reject) => {
+        scheme.KeyEntity.findByIdAndRemove(data.id).then(res => {
+            return resolve(true);
+        }, err => {
+            log.error("Error while removing KeyEntity " + err.toString());
+            return reject(err);
+        });
     });
 };

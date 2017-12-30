@@ -1,8 +1,9 @@
 import {IKeyEntity} from "./Model";
 import {KeyEntityDocument} from "../database/schemes";
 
-export class KeyEntity {
-    constructor(public keyId: string, public keyName: string, public keyEncryptedPassword: string, public keyDescription: string, public keyURL: string) {
+export class KeyEntity implements IKeyEntity {
+
+    constructor(public id: string, public keyName: string, public keyEncryptedPassword: string, public keyDescription: string, public keyURL: string) {
     }
 
     public static getFromDocument(docEntities: KeyEntityDocument[]) {
