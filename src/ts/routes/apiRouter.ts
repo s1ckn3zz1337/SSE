@@ -26,7 +26,8 @@ apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
     }).catch( err => {
         log.error(`/login Error: ${err.message} stack: ${err.stack}`);
         res.statusCode = 403;
-        res.send({statusCode: 403, message: 'Could not login'});
+        // expose the error message -> we will expose the user id
+        res.send({statusCode: 403, message: err.message});
     });
 });
 

@@ -11,12 +11,13 @@ export class User implements IUser {
 
     public password: string;
 
-    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], private fromdb:boolean) {
+    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], private fromdb?:boolean) {
         if(this.fromdb == false){
             this.password = saltHashPassword(password, username);
         }else{
             this.password = password;
         }
+        this.fromdb = undefined;
     }
 
     register() {
@@ -38,13 +39,15 @@ export class User implements IUser {
                 if (this._checkCredentials(response.password)) {
                     this.id = response.id;
                     this.keyrings = response.keyrings;
+                    this.password = undefined;
                     return resolve(this);
                 }
                 log.error(`${this.username} passwords did not match`);
-                return reject(new Error('passwords not match'));
+                // expose the id of the user object
+                return reject(new Error(`password for user with id: ${response.id}, username: ${this.username} did not match`));
             }).catch(err => {
                 log.error(`${this.username} wrong login: ${JSON.stringify(err)}`);
-                return reject(new Error('internal server error'));
+                return reject(new Error('internal server error, propably did not find user'));
             })
         });
     }
