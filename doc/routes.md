@@ -7,28 +7,36 @@ OWASP TOP 10 - [A4 - Insecure Direct Object References][1]
 [1]: https://www.owasp.org/index.php/Top_10_2013-A4-Insecure_Direct_Object_References
 
 ## User Routes
-* Default Route - Login/Index
+* Default Route - Login Interface
 ```
 GET - /
 ```
-* Show Keyring
+* Login User
 ```
-GET - /user/:id/keyring
+POST - /login [email, password]
+```
+* Register Interface
+```
+GET - /register
 ```
 * Create new User
 ```
-POST - /register
+POST - /register [email, password]
+```
+* Show Keyring
+```
+GET - /keyring/:id
 ```
 * Create new KeyRing
 ```
-POST - /user/:id/keyring
+POST - /keyring [name, description]
 ```
 * Create new Password
 ```
-POST - /user/:id/keyring/:id
+POST - /password [idkeyring, name, description, user, password]
 ```
 Wenn wir den PrivKey nicht speichern:
 * Decrypt Password
 ```
-POST - /user/:id/keyring/:keyRingId/key
+POST - /descypt/:id
 ```
