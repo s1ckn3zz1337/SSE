@@ -27,9 +27,9 @@ export class Server {
   private constructor() {
     this.app = express();
     this.config();
-    this.errorHandling();
     this.connenctToDatabase();
     this.setRoutes();
+    this.errorHandling();
   }
 
   private config() {
@@ -68,6 +68,9 @@ export class Server {
       // set locals, only providing error in development
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
+      if(err.originalErr){
+          log.error(JSON.stringify(err.originalErr));
+      }
       // render the error page
       res.status(err.status || 500);
       res.send(err.message);

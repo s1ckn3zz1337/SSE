@@ -25,9 +25,9 @@ apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
         req.session.username = user.username;
         res.send(user);
     }).catch( err => {
-        log.error(`/login error: ${JSON.stringify(err)}`);
+        log.error(`/login Error: ${err.message} stack: ${err.stack}`);
         res.statusCode = 403;
-        res.send({statusCode: 403, message: 'could not login :(', err: err})
+        res.send({statusCode: 403, message: 'Could not login'});
     });
 });
 
@@ -49,7 +49,7 @@ apiRouter.post('/register', (req: Req, res: Res) => {
 
 // we could also use a new router here for better route managment
 apiRouter.use('/admin', GateKeeper.gateKeeperAdmin);
-apiRouter.use('/user', GateKeeper.gateKeeperUser);
+apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
 
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {

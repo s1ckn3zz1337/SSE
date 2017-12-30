@@ -44,7 +44,7 @@ export class User implements IUser {
                 return reject(new Error('passwords not match'));
             }).catch(err => {
                 log.error(`${this.username} wrong login: ${JSON.stringify(err)}`);
-                return reject(err);
+                return reject(new Error('internal server error'));
             })
         });
     }
