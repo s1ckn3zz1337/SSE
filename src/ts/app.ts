@@ -4,6 +4,7 @@ import {logFactory} from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 import {apiRouter} from "./routes/apiRouter";
+import * as gatekeeper from './handler/gatekeeper'
 import * as express from "express";
 import * as session from "express-session";
 import {Request as Req, Response as Res, NextFunction as Next} from "express";
@@ -32,13 +33,18 @@ export class Server {
     private config() {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
-        this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
+        // bind the auth before we init the static directories
+        // -> otherwise the session management won't work properly :(
         this.app.use(session({
             secret: 'trololol',
             cookie: {secure: false, httpOnly: true},
             resave: false,
             saveUninitialized: false
         }));
+        this.app.use('/dashboard.html', gatekeeper.staticAuth);
+        this.app.use('/admin.html', gatekeeper.staticAuth);
+        this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
+
         this.app.set('port', this.port);
         this.httpServer = http.createServer(this.app);
         this.httpServer.listen(this.port);
@@ -77,7 +83,9 @@ export class Server {
 
     private setRoutes() {
         this.app.use('/api', apiRouter);
-        this.app.use('/', (req: Req, res: Res, next: Next) => {
+        /*
+        this.app.use('/admin.html')
+        this.app.use('/dashboard.html', (req: Req, res: Res, next: Next) => {
             if (req.session && req.session.username) {
                 if(req.url !== req.path){
                     res.redirect(req.url);
@@ -86,7 +94,7 @@ export class Server {
             } else {
                 res.redirect('/index.html');
             }
-        });
+        });*/
     }
 
     private connenctToDatabase() {
