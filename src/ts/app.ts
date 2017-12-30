@@ -49,8 +49,7 @@ export class Server {
     this.app.use((req: Req, res: Res, next: Next) => {
       toggleSimulation = !toggleSimulation;
       if (toggleSimulation) {
-        log.info("simulating error");
-        const err: any = new Error('Not Found');
+        const err: any = new Error('Simulated error, refresh again');
         err.status = 404;
         return next(err);
       } else {
@@ -64,7 +63,7 @@ export class Server {
       res.locals.error = req.app.get('env') === 'development' ? err : {};
       // render the error page
       res.status(err.status || 500);
-      res.send('Error - Not Found');
+      res.send(err.message);
     });
   }
 

@@ -3,7 +3,7 @@
   "version": "6.9.1",
   "private": true,
   "scripts": {
-    "start": "node ./build/app.js",
+    "start-dev": "nodemon ./build/app.js",
     "debug": "nodemon --inspect-brk ./build/app.js"
   },
   "dependencies": {
