@@ -4,7 +4,7 @@ $(function () {
 
     login.on('submit', function (e) {
 
-        $.post('/login', login.serialize(), function (data) {
+        $.post('/api/login', login.serialize(), function (data) {
             alert(data);
             window.location.href = 'dashboard.html';
         }).fail(function () {

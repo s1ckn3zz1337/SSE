@@ -6,7 +6,7 @@ $(function () {
 
         if (register.find("#inputPassword").val() == register.find("#inputPassword2").val())
         {
-            $.post('/register', register.serialize(), function (data) {
+            $.post('/api/register', register.serialize(), function (data) {
                 alert(data);
                 window.location.href = 'index.html';
             }).fail(function () {
