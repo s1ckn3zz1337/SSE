@@ -79,7 +79,10 @@ export class Server {
         this.app.use('/api', apiRouter);
         this.app.use('/', (req: Req, res: Res, next: Next) => {
             if (req.session && req.session.username) {
-                res.redirect('/dashboard.html');
+                if(req.url !== req.path){
+                    res.redirect(req.url);
+                }
+                res.end();
             } else {
                 res.redirect('/index.html');
             }
