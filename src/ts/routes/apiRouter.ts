@@ -11,14 +11,13 @@ const log = logFactory.getLogger('.apiRouter.ts');
 
 export const apiRouter = Express.Router();
 
-apiRouter.use('/login', verifyRequestParameter);
+apiRouter.use('/login', verifyLoginRequestParameter);
 
 apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
     const username = getUsername(req);
     const password = getPassword(req);
-    const email = getEmail(req);
-    log.debug(`/login req: ${username} pwd: ${password} email: ${email}`);
-    const user = new User(undefined, username, password, email, [], false);
+    log.debug(`/login req: ${username} pwd: ${password}`);
+    const user = new User(undefined, username, password, undefined, [], false);
     log.debug(`/login req: user: ${JSON.stringify(user)}`);
     user.login().then( user => {
         req.session.userId = user.id;
@@ -80,6 +79,14 @@ apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     res.send('you are an admin!');
     next();
 });
+
+function verifyLoginRequestParameter(req: Req, res: Res, next: Next) {
+    if (getUsername(req) && getPassword(req)) {
+        return next();
+    }
+    res.statusCode = 400;
+    return res.send({statusCode: 400, message: 'missing request parameter'});
+}
 
 function verifyRequestParameter(req: Req, res: Res, next: Next) {
     if (getUsername(req) && getPassword(req) && getEmail(req)) {
