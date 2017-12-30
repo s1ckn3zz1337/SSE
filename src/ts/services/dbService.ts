@@ -35,7 +35,7 @@ export function getUser(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
-                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, response[0].keyrings)); // return first elem as this should be the matched user
+                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings))); // return first elem as this should be the matched user
             } else {
                 log.error(`Could not find user with the username ${username}`);
                 return reject(new Error('could not find matching user'));
