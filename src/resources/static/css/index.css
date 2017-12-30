@@ -79,6 +79,7 @@ body, html {
 }
 
 .form-signin #inputEmail,
+.form-signin #inputName,
 .form-signin #inputPassword,
 .form-signin #inputPassword2 {
     direction: ltr;
