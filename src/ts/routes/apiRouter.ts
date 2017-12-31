@@ -7,6 +7,7 @@ import * as dbService from '../services/dbService'
 import {Keygen} from "../services/keygen/keygen";
 import {KeyPair} from "../objects/Model"
 import {logFactory} from "../config/ConfigLog4J";
+import {KeyEntity} from "../objects/KeyEntity";
 const log = logFactory.getLogger('.apiRouter.ts');
 
 export const apiRouter = Express.Router();
@@ -137,4 +138,9 @@ function getKeyRingId(req: Req): string {
 
 function getKeyRingName(req: Req): string {
     return req.params['k-name'];
+}
+
+function getKeyEnteties(req: Req): KeyEntity[]{
+    const entities: KeyEntity[] = req.body['keyEntities'];
+    return entities;
 }

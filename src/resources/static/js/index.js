@@ -5,7 +5,9 @@ $(function () {
     login.on('submit', function (e) {
 
         $.post('/api/login', login.serialize(), function (data) {
-            alert(data);
+
+            console.log('Successful login for ' + data.username);
+            $.cookie("userid", data.id);
             window.location.href = 'dashboard.html';
         }).fail(function () {
             alert('Fehler');
