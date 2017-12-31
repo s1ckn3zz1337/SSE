@@ -1,5 +1,4 @@
 var userUrl = '/api/user/' + $.cookie('userid');
-
 $(function () {
 
     loadKeyRings();
@@ -47,15 +46,15 @@ function loadKeyRings()
     keyrings.addClass("loading");
     keyrings.html('');
 
-    $.get(userUrl +  '/keyrings', function (keyrings) {
+    $.get(userUrl +  '/keyring', function (keyringData) {
 
-        if (keyrings.length == 0)
+        if (keyringData.length == 0)
             keyrings.append('<div class="warning">Kein Schlüsselbund angelegt.</div>');
         else
         {
-            for (var i = 0; i < keyrings.length; i++)
+            for (var i = 0; i < keyringData.length; i++)
             {
-                keyrings.append('<div class="keyring" ref="'+keyrings[i].idkeyring+'">'+keyrings[i].name+'</div>');
+                keyrings.append('<div class="keyring" ref="'+keyringData[i].idkeyring+'">'+keyringData[i].name+'</div>');
             }
         }
 
