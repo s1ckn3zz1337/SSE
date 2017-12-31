@@ -55,7 +55,13 @@ apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     // todo this should return all keyrings for the user???
     const userId = req.params['uid'];
-    res.send('you are a user! with the id' + userId);
+    dbService.getUserById(userId).then( user => {
+        res.send(user.keyrings);
+    }).catch( error => {
+        res.statusCode = 500;
+        log.error(error.message);
+        res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    });
 });
 
 apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {

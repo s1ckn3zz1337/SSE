@@ -35,7 +35,7 @@ export class User implements IUser {
 
     login() {
         return new Promise<User>((resolve, reject) => {
-            dbService.getUser(this.username).then(response => {
+            dbService.getUserByName(this.username).then(response => {
                 if (this._checkCredentials(response.password)) {
                     this.id = response.id;
                     this.keyrings = response.keyrings;
