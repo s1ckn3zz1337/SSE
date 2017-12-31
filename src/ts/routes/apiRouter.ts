@@ -2,11 +2,10 @@ import * as Express from "express";
 import * as session from "express-session";
 import {Response as Res, Request as Req, NextFunction as Next} from "express";
 import * as GateKeeper from "../handler/gatekeeper";
-import {User} from "../objects/User";
 import * as dbService from '../services/dbService'
 import {Keygen} from "../services/keygen/keygen";
-import {KeyPair} from "../objects/Model"
 import {logFactory} from "../config/ConfigLog4J";
+import {KeyPair, KeyRing, User} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -65,18 +64,26 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     });
 });
 
+/**
+ * Create new key ring for user
+ */
 apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
-    // todo this should create a new keyring?!
     let userId = getUserId(req);
-    let kid = getKeyRingId(req);
-    let ringName = getKeyRingName(req);
+    let ringName = getName(req);
+    let ringDescription = getDescription(req);
     // create and validate new keyring here
-    Keygen.generateNewRSAKey((key: KeyPair) => {
-        //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
-        let filename = getKeyRingName(req) + "-" + getKeyRingId(req) + "-" + "-keyring.pem";
+    Keygen.generateNewRSAKey((keyPair: KeyPair) => {
+        let filename = ringName + "-" + "-keyring.pem";
         res.attachment(filename);
+        //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
         //TODO store the public key on the server --> the user is able to add new keys to the ring without using his private key all the time [public key can be generated from private key, but key.public exists already]
-        res.send(key.private);
+        dbService.createNewKeyRing(new KeyRing(undefined, ringName, ringDescription, [])).then(fulfilled =>{        
+            log.info(keyPair.private);
+            res.send(keyPair.private);
+        }, rejected => {
+            log.error("Error at creating new key ring: "+rejected);
+            res.send({statusCode: 500, message: "Internal Server error", error: rejected});
+        })
     });
 });
 
@@ -136,8 +143,12 @@ function getKeyRingId(req: Req): string {
     return req.params['kid'];
 }
 
-function getKeyRingName(req: Req): string {
-    return req.params['k-name'];
+function getName(req: Req): string {
+    return req.body['name'];
+}
+
+function getDescription(req: Req):string{
+    return req.body['descripton'];
 }
 
 function getKeyEnteties(req: Req): KeyEntity[]{

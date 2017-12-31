@@ -4,13 +4,17 @@ $(function () {
     // Button actions
     $('.btn-addkeyring').on('click', function () { openFrame('addkeyring'); });
     $('.btn-addpassword').on('click', function () { openFrame('addpassword'); });
-
+    let form = $('.form-addkeyring');
     // Form bindings
-    $('.form-addkeyring').on('submit', function (e) {
+    form.on('submit', function (e) {
 
-        $.post('/api/user/' + $.cookie('userid') + '/keyring', $('.form-addkeyring').serialize(), function (data) {
-            /* TODO Get Certificate*/
-        }).fail(function () {
+        $.post('/api/user/' + $.cookie('userid') + '/keyring', form.serialize(), function (data) {
+            let keyRingName = form.serialize().split("&")[0].split("=")[1];
+            let element = document.createElement("a");
+            element.setAttribute("download", keyRingName+".pem");
+            element.setAttribute("href", "data:application/octet-stream;base64,"+btoa(data));
+            element.click();
+        }, "text").fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
         }).always(function () {
             openFrame('keyrings');
