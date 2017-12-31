@@ -1,7 +1,7 @@
 import {saltHashPassword} from '../services/cryptoService';
 import {stringify} from "querystring";
-import {IUser, KeyRing} from "./Model"
 import * as dbService from '../services/dbService'
+import {KeyRing, IKeyRing} from "./KeyRing";
 
 import {logFactory} from "../config/ConfigLog4J";
 
@@ -11,13 +11,12 @@ export class User implements IUser {
 
     public password: string;
     // better would be to stor the keyrings as ids -> otherwise why the hell do we need KeyRing object and table?:
-    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], private fromdb?:boolean) {
-        if(this.fromdb == false){
+    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], fromdb?:boolean) {
+        if(fromdb == false){
             this.password = saltHashPassword(password, username);
         }else{
             this.password = password;
         }
-        this.fromdb = undefined;
     }
 
     register() {
@@ -64,4 +63,12 @@ export class User implements IUser {
             return dbService.addNewKeyRing(this, ring);
         }
     }
+}
+
+export interface IUser {
+    id: string,
+    username: string,
+    email: string,
+    password: string,
+    keyrings: IKeyRing[]
 }

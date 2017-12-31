@@ -1,5 +1,4 @@
 import {Schema, model, SchemaDefinition, Document} from "mongoose";
-import * as Models from "../objects/Model";
 
 /** TODO sync schemas and interfaces */
 
@@ -23,11 +22,13 @@ export interface KeyEntityDocument extends Document {
 /** Key Ring */
 export const keyRingSchema: Schema = new Schema({
     _id: Schema.Types.ObjectId,
+    name: String,
     description: String,
     keyEntites: [keyEntitySchema]
 });
 export interface KeyRingDocument extends Document {
     schemaId: Schema.Types.ObjectId,
+    name: string,
     description: string,
     keyEntites: KeyEntityDocument[]
 }
@@ -41,7 +42,7 @@ export const userSchema: Schema = new Schema({
 });
 
 export interface UserDocument extends Document {
-    _id: string,
+    schemaId: string,
     username: string,
     email: string,
     password: string,

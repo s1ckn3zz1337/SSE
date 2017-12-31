@@ -19,3 +19,11 @@ export class KeyEntity implements IKeyEntity {
         }
     }
 }
+
+export interface IKeyEntity {
+    id: string,
+    keyName: string,
+    keyEncryptedPassword: string,
+    keyDescription: string,
+    keyURL: string
+}

@@ -37,7 +37,7 @@ export function getUserById(userid: string): Promise<User> {
         scheme.User.find({'_id': userid}).then(response => {
             if (response && response.length > 0) {
                 // todo why do we need a KeyRing sheme in the db, if we are storing everything in the User object?
-                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings), true)); // return first elem as this should be the matched user
+                return resolve(new User(response[0].schemaId, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings), true)); // return first elem as this should be the matched user
             } else {
                 log.error(`Could not find user with the userid ${userid}`);
                 return reject(new Error('could not find matching user'));
@@ -54,7 +54,7 @@ export function getUserByName(username: string): Promise<User> {
         scheme.User.find({'username': username}).then(response => {
             if (response && response.length > 0) {
                 // todo why do we need a KeyRing sheme in the db, if we are storing everything in the User object?
-                return resolve(new User(response[0]._id, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings), true)); // return first elem as this should be the matched user
+                return resolve(new User(response[0].schemaId, response[0].username, response[0].password, response[0].email, KeyRing.getFromDocument(response[0].keyrings), true)); // return first elem as this should be the matched user
             } else {
                 log.error(`Could not find user with the username ${username}`);
                 return reject(new Error('could not find matching user'));
