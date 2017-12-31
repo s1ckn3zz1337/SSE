@@ -58,9 +58,9 @@ export class User implements IUser {
 
     addKeyRing(ring: KeyRing): Promise<KeyRing> {
         if (ring.id) {
-            return dbService.addExistingKeyRing(this, ring);
+            return dbService.addExistingKeyRing(this.id, ring);
         } else {
-            return dbService.addNewKeyRing(this, ring);
+            return dbService.addNewKeyRing(this.id, ring);
         }
     }
 }

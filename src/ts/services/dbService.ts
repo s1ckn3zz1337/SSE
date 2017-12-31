@@ -130,9 +130,9 @@ export function createNewKeyRing(data: KeyRing): Promise<KeyRing> {
     });
 }
 
-export function addExistingKeyRing(user: User, data: KeyRing): Promise<KeyRing> {
+export function addExistingKeyRing(userId: string, data: KeyRing): Promise<KeyRing> {
     return new Promise<KeyRing>((resolved, rejected) => {
-        scheme.User.findByIdAndUpdate({'_id': user.id}, {$push: {keyrings: data}}, {"new": true}, (err, result) => {
+        scheme.User.findByIdAndUpdate({'_id': userId}, {$push: {keyrings: data}}, {"new": true}, (err, result) => {
             if (result) {
                 return resolved(data);
             } else {
@@ -143,10 +143,10 @@ export function addExistingKeyRing(user: User, data: KeyRing): Promise<KeyRing> 
     });
 }
 
-export function addNewKeyRing(user: User, data: KeyRing): Promise<KeyRing> {
+export function addNewKeyRing(userId: string, data: KeyRing): Promise<KeyRing> {
     return new Promise<KeyRing>((resolved, rejected) => {
         createNewKeyRing(data).then(fulfilled => {
-            addExistingKeyRing(user, fulfilled).then(resolve => {
+            addExistingKeyRing(userId, fulfilled).then(resolve => {
                 resolved(resolve);
             }, reject => {
                 rejected(reject);
