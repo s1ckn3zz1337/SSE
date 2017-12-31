@@ -36,7 +36,7 @@ export class Server {
         // bind the auth before we init the static directories
         // -> otherwise the session management won't work properly :(
         this.app.use(session({
-            secret: 'trololol',
+            secret: Math.random().toString(36),
             cookie: {secure: false, httpOnly: true},
             resave: false,
             saveUninitialized: false
