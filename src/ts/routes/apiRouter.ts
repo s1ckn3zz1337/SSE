@@ -89,10 +89,9 @@ apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
     dbService.getKeyRing(getKeyRingId(req)).then(keyring =>{
         res.send(keyring);
     }).catch(error => {
-        res.statusCode = 500;
         log.error('GET ' + req.url, error);
         res.send({statusCode: 500, message: 'Internal Server error', error: error});
-    })
+    });
 });
 
 apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res) => {
