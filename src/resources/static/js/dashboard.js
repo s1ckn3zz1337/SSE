@@ -39,8 +39,6 @@ $(function () {
 
 });
 
-var currentIdKeyRing = null;
-
 function loadKeyRings()
 {
     // Loading keyrings from API
@@ -56,7 +54,7 @@ function loadKeyRings()
         {
             for (var i = 0; i < keyringData.length; i++)
             {
-                keyrings.append('<div class="keyring" ref="'+keyringData[i].idkeyring+'">'+keyringData[i].name+'</div>');
+                keyrings.append('<div class="keyring" ref="'+keyringData[i].id+'">'+keyringData[i].name+'</div>');
             }
         }
 
@@ -76,15 +74,14 @@ function openKeyRing(keyring)
 {
     // Open a specific keyring
     var name = keyring.text();
-    var idkeyring = keyring.attr("ref");
-    currentIdKeyRing = idkeyring;
+    var keyringId = keyring.attr("ref");
 
     $('#keyringname').text(name);
-    $('#input-idkeyring').val(idkeyring);
+    $('#input-idkeyring').val(keyringId);
 
     var passwords = $('#passwords');
 
-    $.get('/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring, function(passwds) {
+    $.get('/api/user/' + $.cookie('userid') + '/keyring/'+keyringId, function(passwds) {
 
         if (passwds.length == 0)
             passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
