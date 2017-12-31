@@ -26,10 +26,12 @@ POST - /register [username, email, password]
 * Get Keyrings of User
 ```
 GET - /keyrings
+RETURNS JSON array of [idkeyring, name, description]
 ```
 * Show Keyring
 ```
 GET - /keyring/:id
+RETURNS JSON array of [idkeyentity, name, description, user, password]
 ```
 * Create new KeyRing
 ```
