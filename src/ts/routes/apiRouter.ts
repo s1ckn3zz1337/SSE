@@ -74,12 +74,9 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
     let ringDescription = getDescription(req);
     // create and validate new keyring here
     Keygen.generateNewRSAKey((keyPair: KeyPair) => {
-        let filename = ringName + "-" + "-keyring.pem";
-        res.attachment(filename);
         //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
         //TODO store the public key on the server --> the user is able to add new keys to the ring without using his private key all the time [public key can be generated from private key, but key.public exists already]
         dbService.createNewKeyRing(new KeyRing(undefined, ringName, ringDescription, [])).then(fulfilled =>{        
-            log.info(keyPair.private);
             res.send(keyPair.private);
         }, rejected => {
             log.error("Error at creating new key ring: "+rejected);
