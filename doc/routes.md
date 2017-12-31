@@ -23,6 +23,10 @@ GET - /register
 ```
 POST - /register [username, email, password]
 ```
+* Get Keyrings of User
+```
+GET - /keyrings
+```
 * Show Keyring
 ```
 GET - /keyring/:id
