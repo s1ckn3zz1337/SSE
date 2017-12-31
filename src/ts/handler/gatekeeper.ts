@@ -10,8 +10,13 @@ export function staticAuth(req: Request, res: Response, next:NextFunction){
     if(_isAuthenticated(req)){
         return next();
     }
+    if(req.url !== '/index.html'){
+        return res.redirect('/index.html');
+    }
+    return res.end();
+    /*
     res.statusCode = 401;
-    return res.send({message: 'could not verify session', statusCode: 401});
+    return res.send({message: 'could not verify session', statusCode: 401});*/
 }
 
 export function gateKeeperUser(req: Request, res: Response, next: NextFunction) {
