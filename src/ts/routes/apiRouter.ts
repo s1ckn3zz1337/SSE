@@ -1,9 +1,9 @@
 import * as Express from "express";
 import * as session from "express-session";
 import {Response as Res, Request as Req, NextFunction as Next} from "express";
-import * as AuthService from "../services/authService";
 import * as GateKeeper from "../handler/gatekeeper";
 import {User} from "../objects/User";
+import * as dbService from '../services/dbService'
 import {Keygen} from "../services/keygen/keygen";
 import {KeyPair} from "../objects/Model"
 import {logFactory} from "../config/ConfigLog4J";
@@ -53,12 +53,13 @@ apiRouter.use('/admin', GateKeeper.gateKeeperUser);
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
-    // show keyring for the user with the user id
+    // todo this should return all keyrings for the user???
     const userId = req.params['uid'];
     res.send('you are a user! with the id' + userId);
 });
 
 apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
+    // todo this should create a new keyring?!
     let userId = getUserId(req);
     let kid = getKeyRingId(req);
     let ringName = getKeyRingName(req);
@@ -72,8 +73,19 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
     });
 });
 
-apiRouter.post('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
+apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
+    // todo this should return the keyring with the desired id
     // create and validate new pass for the desired keyring
+});
+
+apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res) => {
+    // todo this should create a new key for the specified keyring
+    // create and validate new pass for the desired keyring
+});
+
+apiRouter.get('/user/:uid/keyring/:kid/key/:keyid',(req: Req, res: Res) => {
+    // todo this should return the key with the desired id from the keyring with the desired id
+    //
 });
 
 apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {

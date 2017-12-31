@@ -10,7 +10,7 @@ const log = logFactory.getLogger('.User.ts');
 export class User implements IUser {
 
     public password: string;
-
+    // better would be to stor the keyrings as ids -> otherwise why the hell do we need KeyRing object and table?:
     constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], private fromdb?:boolean) {
         if(this.fromdb == false){
             this.password = saltHashPassword(password, username);
