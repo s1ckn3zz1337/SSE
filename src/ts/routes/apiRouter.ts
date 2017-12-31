@@ -7,6 +7,7 @@ import {Keygen} from "../services/keygen/keygen";
 import {logFactory} from "../config/ConfigLog4J";
 import {KeyPair, KeyRing, User} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
+import {error} from "util";
 const log = logFactory.getLogger('.apiRouter.ts');
 
 export const apiRouter = Express.Router();
@@ -56,10 +57,10 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     // todo this should return all keyrings for the user???
     const userId = req.params['uid'];
     dbService.getUserById(userId).then( user => {
-        res.send(user.keyrings);
+        res.send(user.keyrings || []);
     }).catch( error => {
         res.statusCode = 500;
-        log.error(error.message);
+        log.error('GET ' + req.url, error);
         res.send({statusCode: 500, message: 'Internal Server error', error: error});
     });
 });
@@ -88,8 +89,13 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
 });
 
 apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
-    // todo this should return the keyring with the desired id
-    // create and validate new pass for the desired keyring
+    dbService.getKeyRing(getKeyRingId(req)).then(keyring =>{
+        res.send(keyring);
+    }).catch(error => {
+        res.statusCode = 500;
+        log.error('GET ' + req.url, error);
+        res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    })
 });
 
 apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res) => {
