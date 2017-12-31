@@ -4,6 +4,7 @@ $(function () {
 
     // Button actions
     $('.btn-addkeyring').on('click', function () { openFrame('addkeyring'); });
+    $('.btn-addpassword').on('click', function () { openFrame('addpassword'); });
 
     // Form bindings
     $('.form-addkeyring').on('submit', function (e) {
@@ -13,14 +14,29 @@ $(function () {
         }).fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
         }).always(function () {
-           openFrame('keyrings');
-           loadKeyRings();
+            openFrame('keyrings');
+            loadKeyRings();
+        });
+
+        e.preventDefault();
+    });
+    $('.form-addpassword').on('submit', function (e) {
+
+        $.post('/api/password', $('.form-addpassword').serialize(), function (data) {
+            /* TODO Get Certificate*/
+        }).fail(function () {
+            alert("Passwort konnte nicht angelegt werden.");
+        }).always(function () {
+            openFrame('passwords');
+            loadKeyRings();
         });
 
         e.preventDefault();
     });
 
 });
+
+var currentIdKeyRing = null;
 
 function loadKeyRings()
 {
@@ -37,23 +53,52 @@ function loadKeyRings()
         {
             for (var i = 0; i < keyrings.length; i++)
             {
-                keyrings.append('<div class="keyring">'+keyrings[i].name+'</div>');
+                keyrings.append('<div class="keyring" ref="'+keyrings[i].idkeyring+'">'+keyrings[i].name+'</div>');
             }
         }
 
-        keyrings.find('.keyring').on('click', function () { openKeyRing($(this)); });
-
-        keyrings.removeClass("loading");
     }, 'JSON').fail(function () {
         keyrings.append('<div class="warning">Fehler beim Laden der Schlüsselbünde.</div>');
+    }).always(function () {
+
+        // Test
+        keyrings.append('<div class="keyring" ref="666">Testring</div>');
+
+        keyrings.find('.keyring').on('click', function () { openKeyRing($(this)); });
         keyrings.removeClass("loading");
     });
 }
 
-function openKeyRing()
+function openKeyRing(keyring)
 {
     // Open a specific keyring
+    var name = keyring.text();
+    var idkeyring = keyring.attr("ref");
+    currentIdKeyRing = idkeyring;
 
+    $('#keyringname').text(name);
+    $('#input-idkeyring').val(idkeyring);
+
+    var passwords = $('#passwords');
+
+    $.get('/api/keying/'+idkeyring, function(passwds) {
+
+        if (passwds.length == 0)
+            passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
+        else
+        {
+            for (var i = 0; i < passwds.length; i++)
+            {
+                passwds.append('<div class="password" ref="'+passwds[i].idpassword+'">'+passwds[i].name+'</div>');
+            }
+        }
+
+    },'JSON').fail(function () {
+        passwords.append('<div class="warning">Fehler beim Laden der Passwörter.</div>');
+    }).always(function () {
+    });
+
+    openFrame('keyring');
 }
 
 function openFrame(name)

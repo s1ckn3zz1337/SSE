@@ -20,7 +20,14 @@
             <button class="btn btn-lg btn-primary btn-block btn-addkeyring">Neuen Schlüsselbund anlegen</button>
         </div>
         <div class="frame keyring">
-            <!-- TODO: Interface for keyring overview -->
+            <h1 id="keyringname"></h1>
+            <div id="passwords">
+
+            </div>
+            <button class="btn btn-lg btn-primary btn-block btn-addpassword">Neues Passwort anlegen</button><br>
+            <a href="#" onclick="openFrame('keyrings')" class="forgot-password">
+                Zurück zur Schlüsselbundübersicht
+            </a>
         </div>
         <div class="frame password">
             <!-- TODO: Interface for password -->
@@ -29,11 +36,27 @@
             <h1>Schlüsselbund hinzufügen</h1>
             <form class="form form-addkeyring">
                 <input type="text" id="inputName" class="form-control" placeholder="Name" name="name" required autofocus>
+                <textarea class="form-control" placeholder="Beschreibung" name="description" required></textarea>
                 <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Anlegen</button>
             </form>
+            <a href="#" onclick="openFrame('keyrings')" class="forgot-password">
+                Zurück zur Schlüsselbundübersicht
+            </a>
         </div>
         <div class="frame addpassword">
-            <!-- TODO: Interface for adding a password -->
+            <h1>Passwort hinzufügen</h1>
+            <form class="form form-addpassword">
+                <input type="text" id="inputName" class="form-control" placeholder="Name" name="name" required autofocus>
+                <textarea class="form-control" placeholder="Beschreibung" name="description"></textarea>
+                <input type="text" id="inputName" class="form-control" placeholder="Webseiten URL" name="url">
+                <input type="text" id="inputName" class="form-control" placeholder="Benutzer" name="user" required>
+                <input type="text" id="inputName" class="form-control" placeholder="Passwort" name="password" required>
+                <input type="hidden" name="idkeyring" value="" id="input-idkeyring">
+                <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Anlegen</button>
+            </form>
+            <a href="#" onclick="openFrame('keyring')" class="forgot-password">
+                Zurück zum Schlüsselbund
+            </a>
         </div>
     </div><!-- /card-container -->
 </div><!-- /container -->
