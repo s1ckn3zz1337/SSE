@@ -44,7 +44,7 @@ function loadKeyRings()
     keyrings.addClass("loading");
     keyrings.html('');
 
-    $.get('/api/user/' + $.cookie('userid') +  '/keyring', function (keyrings) {
+    $.get('/api/user/' + $.cookie('userid') +  '/keyring', function (keyringData) {
 
         if (keyringData.length == 0)
             keyrings.append('<div class="warning">Kein Schlüsselbund angelegt.</div>');
