@@ -1,9 +1,8 @@
-var userUrl = '/api/user/' + $.cookie('userid');
+
 
 $(function () {
 
     loadKeyRings();
-
     // Button actions
     $('.btn-addkeyring').on('click', function () { openFrame('addkeyring'); });
     $('.btn-addpassword').on('click', function () { openFrame('addpassword'); });
@@ -11,7 +10,7 @@ $(function () {
     // Form bindings
     $('.form-addkeyring').on('submit', function (e) {
 
-        $.post(userUrl + '/keyring', $('.form-addkeyring').serialize(), function (data) {
+        $.post('/api/user/' + $.cookie('userid') + '/keyring', $('.form-addkeyring').serialize(), function (data) {
             /* TODO Get Certificate*/
         }).fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
@@ -47,7 +46,7 @@ function loadKeyRings()
     keyrings.addClass("loading");
     keyrings.html('');
 
-    $.get(userUrl +  '/keyrings', function (keyrings) {
+    $.get('/api/user/' + $.cookie('userid') +  '/keyrings', function (keyrings) {
 
         if (keyrings.length == 0)
             keyrings.append('<div class="warning">Kein Schlüsselbund angelegt.</div>');
@@ -83,7 +82,7 @@ function openKeyRing(keyring)
 
     var passwords = $('#passwords');
 
-    $.get(userUrl + '/keying/'+idkeyring, function(passwds) {
+    $.get('/api/user/' + $.cookie('userid') + '/keying/'+idkeyring, function(passwds) {
 
         if (passwds.length == 0)
             passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
