@@ -57,7 +57,7 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     // todo this should return all keyrings for the user???
     const userId = req.params['uid'];
     dbService.getUserById(userId).then( user => {
-        res.send(user.keyrings);
+        res.send(user.keyrings || []);
     }).catch( error => {
         res.statusCode = 500;
         log.error(error.message);

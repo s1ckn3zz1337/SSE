@@ -80,7 +80,7 @@ function openKeyRing(keyring)
 
     var passwords = $('#passwords');
 
-    $.get('/api/user/' + $.cookie('userid') + '/keying/'+idkeyring, function(passwds) {
+    $.get('/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring, function(passwds) {
 
         if (passwds.length == 0)
             passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
