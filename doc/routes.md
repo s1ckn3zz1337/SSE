@@ -31,7 +31,7 @@ RETURNS JSON array of [idkeyring, name, description]
 * Show Keyring
 ```
 GET - /keyring/:id
-RETURNS JSON array of [idkeyentity, name, description, user, password]
+RETURNS JSON array of [idkeyentity, name, description, url, user, password]
 ```
 * Create new KeyRing
 ```
@@ -39,7 +39,7 @@ POST - /keyring [name, description]
 ```
 * Create new Password
 ```
-POST - /password [idkeyring, name, description, user, password]
+POST - /password [idkeyring, name, description, url, user, password]
 ```
 Wenn wir den PrivKey nicht speichern:
 * Decrypt Password
