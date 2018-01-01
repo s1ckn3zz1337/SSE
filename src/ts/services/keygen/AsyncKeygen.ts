@@ -3,6 +3,7 @@ import { KeyPair } from "../../objects/model";
 import { logFactory } from "../../config/ConfigLog4J";
 import * as NodeRSA from "node-rsa";
 
+
 const encoding = "base64";
 const log = logFactory.getLogger(".childKeygen");
 
@@ -24,7 +25,7 @@ function createKeyPair(bits?: number) {
     let key = new NodeRSA();
     key.generateKeyPair(bits);
     return {
-        public: key.exportKey("public").toString(),
-        private: key.exportKey("private").toString()
+        public: key.exportKey('pkcs8-public-pem').toString(),
+        private: key.exportKey('pkcs8-private-pem').toString()
     };
 }

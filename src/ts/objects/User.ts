@@ -4,6 +4,7 @@ import * as dbService from '../services/dbService'
 import {KeyRing, IKeyRing} from "./KeyRing";
 
 import {logFactory} from "../config/ConfigLog4J";
+import {UserDocument} from '../database/schemes';
 
 const log = logFactory.getLogger('.User.ts');
 
@@ -11,10 +12,10 @@ export class User implements IUser {
 
     public password: string;
     // better would be to stor the keyrings as ids -> otherwise why the hell do we need KeyRing object and table?:
-    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], fromdb?:boolean) {
-        if(fromdb == false){
+    constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], fromdb?: boolean) {
+        if (fromdb == false) {
             this.password = saltHashPassword(password, username);
-        }else{
+        } else {
             this.password = password;
         }
     }
@@ -62,6 +63,19 @@ export class User implements IUser {
         } else {
             return dbService.addNewKeyRing(this.id, ring);
         }
+    }
+
+    public static getFromDocuments(userDocs: UserDocument[]): User[] {
+        let users = new Array(userDocs.length);
+        for (let i = 0; i < userDocs.length; i++) {
+            let userDoc = userDocs[i];
+            users[i] = User.getFromDocument(userDoc);
+        }
+        return users;
+    }
+
+    public static getFromDocument(userDoc: UserDocument): User{
+        return new User(userDoc.id, userDoc.username, userDoc.password, userDoc.email, KeyRing.getFromDocuments(userDoc.keyrings), true);
     }
 }
 

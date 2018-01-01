@@ -1,8 +1,8 @@
-import * as crypto from "crypto";
 import *  as process from "child_process";
 import { KeyPair } from "../../objects/Model";
 import { json } from "express";
 import { logFactory } from "../../config/ConfigLog4J";
+import * as NodeRSA from "node-rsa";
 
 export class Keygen {
 
@@ -33,6 +33,14 @@ export class Keygen {
                 });
             });
         }
+    }
+
+    public static encrypt(password: string, publicKey: string): string{
+        return new NodeRSA(publicKey, 'pkcs8-public-pem').encrypt(password, "base64");
+    }
+
+    public static decrypt(encryptedPassword: string, privateKey: string): string{
+        return new NodeRSA(privateKey, 'pkcs8-private-pem').decrypt(encryptedPassword, "ascii");
     }
 }
 
