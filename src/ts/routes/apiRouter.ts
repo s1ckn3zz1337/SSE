@@ -8,6 +8,7 @@ import {logFactory} from "../config/ConfigLog4J";
 import {KeyPair, KeyRing, User} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
 import {error} from "util";
+
 const log = logFactory.getLogger('.apiRouter.ts');
 
 export const apiRouter = Express.Router();
@@ -49,14 +50,16 @@ apiRouter.post('/register', (req: Req, res: Res) => {
     })
 });
 
-// implement A7 - insecure Admin interface
-apiRouter.use('/admin', GateKeeper.gateKeeperUser);
 
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
-    // todo this should return all keyrings for the user???
-    const userId = req.params['uid'];
+    /*
+        Normally we would use the userId provided in the session, not in the request params
+        -> This is a vulnerability, because EVERY user with a valid session can access other users keyrings
+        by providing their id in the request.
+     */
+    const userId = getUserId(req);
     dbService.getUserById(userId).then(user => {
         res.send(user.keyrings || []);
     }).catch(error => {
@@ -79,16 +82,6 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
         log.error("Error at creating new key ring: " + rejected);
         res.sendStatus(500);
     })
-    // create and validate new keyring here
-    /*
-    Keygen.generateNewRSAKey().then( keyPair => {
-        //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
-        //TODO store the public key on the server --> the user is able to add new keys to the ring without using his private key all the time [public key can be generated from private key, but key.public exists already]
-
-    }).catch(error => {
-        log.error('POST ' + req.url, error);
-        res.sendStatus(500);
-    });*/
 });
 
 apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
@@ -101,23 +94,18 @@ apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
 });
 
 apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
-    let kid = getKeyRingId(req);
-    let name = getName(req);
-    let description = getDescription(req);
-    let url = getUrl(req);
-    let user = getUsername(req);
-    let password = getPassword(req);
-    dbService.addNewKeyEntity(kid, new KeyEntity(undefined, name, password, description, url))
+    const userId = getUserId(req);
+    const kid = getKeyRingId(req);
+    const name = getName(req);
+    const description = getDescription(req);
+    const url = getUrl(req);
+    const password = getPassword(req);
+    dbService.addNewKeyEntity(userId, kid, new KeyEntity(undefined, name, password, description, url))
         .then(fulfilled => {
             res.sendStatus(200);
         }).catch(rejected => {
-            res.sendStatus(500);
-        });
-});
-
-apiRouter.get('/user/:uid/keyring/:kid/key/:keyid', (req: Req, res: Res) => {
-    // todo this should return the key with the desired id from the keyring with the desired id
-    //
+        res.sendStatus(500);
+    });
 });
 
 apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
@@ -175,6 +163,7 @@ function getName(req: Req): string {
 function getDescription(req: Req): string {
     return req.body['description'];
 }
+
 /** from body */
 function getUrl(req: Req): string {
     return req.body['url'];

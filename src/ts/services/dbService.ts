@@ -141,13 +141,23 @@ function addExistingKeyEntity(ringId: string, data: KeyEntity): Promise<KeyEntit
         .then(resolve => data);
 }
 
-export function addNewKeyEntity(ringId: string, keyEntity: KeyEntity): Promise<KeyEntity> {
-    return createNewKeyEntity(keyEntity)
-        .then(resolve => {
-            keyEntity.id = resolve.id;
-            console.log("RingId: "+ringId);
-            return addExistingKeyEntity(ringId, keyEntity)
+export function addNewKeyEntity(userId: string, ringId: string, keyEntity: KeyEntity): Promise<KeyEntity> {
+    return new Promise<KeyEntity>((resolve, reject) => {
+        getUserById(userId).then( user => {
+            if(user.keyrings.find(value =>{
+                    return value.id == ringId;
+                })){
+                return createNewKeyEntity(keyEntity).then( resolve => {
+                    keyEntity.id = resolve.id;
+                    console.log("RingId: "+ringId);
+                    return addExistingKeyEntity(ringId, keyEntity)
+                })
+            }else{
+                reject(new Error('userId doesnt have the provided key id, something is wrong, maybe hack attemnt'));
+            }
         });
+
+    });
 }
 
 export function deleteKeyEntity(keyEntity: KeyEntity) {

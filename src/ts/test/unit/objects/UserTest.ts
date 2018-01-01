@@ -19,6 +19,6 @@ describe('Test User Class', () => {
     describe('Test registration', () => {
         it('Should fail on missing params');
         it('Should fail if user already exists');
-        it('Should return a user on sucess');
+        it('Should return a user on success');
     })
 });
