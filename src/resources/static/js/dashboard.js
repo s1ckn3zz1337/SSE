@@ -1,6 +1,9 @@
 $(function () {
     loadKeyRings();
     // Button actions
+    $('.btn-decryptpassword').on('click', function () {
+        decryptPasswords();
+    });
     $('.btn-addkeyring').on('click', function () {
         openFrame('addkeyring');
     });
@@ -104,12 +107,35 @@ function hideLoader(){
 
 var currentKeyRingId;
 
+function decryptPasswords(){
+    if($('#keyringprivatekey')[0].files.length > 0) {
+        const r = new FileReader();
+        r.onload = function(e) {
+            const privateKey = e.target.result;
+            const cryptor = new JSEncrypt();
+            cryptor.setPrivateKey(privateKey);
+            for(let i = 0; i < memory[currentKeyRingId].keyEntities.length; i++){
+                let currentKey = memory[currentKeyRingId].keyEntities[i];
+                currentKey.decryptedPassword = cryptor.decrypt(currentKey.keyEncryptedPassword);
+            }
+        };
+        r.readAsText($('#keyringprivatekey')[0].files[0]);
+    }else{
+        alert('No file specified, cannot decrypt :(');
+    }
+}
+
+function openKey(key) {
+    // todo add page if there is a decrypted password, add it too
+}
+
 function openKeyRing(keyring) {
     // Open a specific keyring
     var name = keyring.text();
     currentKeyRingId = keyring.attr("ref");
 
     $('#keyringname').text(name);
+
     $('#input-idkeyring').val(currentKeyRingId);
     $('#input-public-key').val(memory[currentKeyRingId].publicKey);
 
