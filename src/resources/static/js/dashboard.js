@@ -16,8 +16,8 @@ $(function () {
         keys.getKey();
         hideLoader();
         const keyRingData = ConvertFormToJSON(form);
-        keyRingData.publicKey = keys.getPublicKeyString();
-        const privateKey = keys.getPrivateKeyString();
+        keyRingData.publicKey = keys.getPublicKey();
+        const privateKey = keys.getPrivateKey();
         $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
             let keyRingName = keyRingData.name;
             let element = document.createElement("a");
@@ -34,7 +34,12 @@ $(function () {
         e.preventDefault();
     });
     $('.form-addpassword').on('submit', function (e) {
-        $.post('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId + '/key', $('.form-addpassword').serialize(), function (data) {
+        const formData = ConvertFormToJSON($('.form-addpassword'));
+        const cryptor = new JSEncrypt();
+        cryptor.setPublicKey(formData.publicKey);
+        formData.password = cryptor.encrypt(formData.password);
+        formData.publicKey = '';
+        $.post('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId + '/key', formData, function (response) {
         }).fail(function () {
             alert("Passwort konnte nicht angelegt werden.");
         }).always(function () {

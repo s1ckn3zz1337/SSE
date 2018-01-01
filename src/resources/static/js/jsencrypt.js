@@ -4303,7 +4303,7 @@ var JSEncryptExports = {};
     };
 
     JSEncrypt.prototype.getPrivateKeyString = function() {
-        return '-----BEGIN PRIVATE KEY-----\n' + this.getKey().getPublicKey() + '\n-----END PRIVATE KEY-----';
+        return '-----BEGIN PRIVATE KEY-----' + this.getKey().getPrivateKey() + '-----END PRIVATE KEY-----';
     }
 
     /**
@@ -4330,7 +4330,7 @@ var JSEncryptExports = {};
     };
 
     JSEncrypt.prototype.getPublicKeyString = function() {
-        return '-----BEGIN PUBLIC KEY-----\n' + this.getKey().getPublicKey() + '\n-----END PUBLIC KEY-----';
+        return '-----BEGIN PUBLIC KEY-----' + this.getKey().getPublicKey() + '-----END PUBLIC KEY-----';
     }
 
     /**

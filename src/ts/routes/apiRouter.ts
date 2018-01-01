@@ -107,12 +107,7 @@ apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
     let url = getUrl(req);
     let user = getUsername(req);
     let password = getPassword(req);
-    let publicKey = getPublicKey(req);
-    let encryptedPassword = Keygen.encrypt(password, publicKey);
-    //let privateKey = ``
-    //let decryptPassword = Keygen.decrypt(encryptedPassword, privateKey);
-
-    dbService.addNewKeyEntity(kid, new KeyEntity(undefined, name, encryptedPassword, description, url))
+    dbService.addNewKeyEntity(kid, new KeyEntity(undefined, name, password, description, url))
         .then(fulfilled => {
             res.sendStatus(200);
         }).catch(rejected => {
