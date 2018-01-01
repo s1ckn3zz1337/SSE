@@ -3,36 +3,23 @@ import { KeyPair } from "../../objects/Model";
 import { json } from "express";
 import { logFactory } from "../../config/ConfigLog4J";
 import * as NodeRSA from "node-rsa";
-
+const log = logFactory.getLogger(".keygen");
 export class Keygen {
 
     private static bits = 2048;
     private static threads = 0;
     private static queue: GenerationArgs[] = new Array<GenerationArgs>(30);
-
     /** https://www.npmjs.com/package/node-rsa */
-    public static generateNewRSAKey(callback: (key: KeyPair) => any): void {
-        let log = logFactory.getLogger(".keygen");
-        log.info("" + Keygen.threads);
-        if (Keygen.threads > 4) {
-            Keygen.queue.push({ callback: callback });
-        } else {
-            Keygen.threads++;
-            let child = process.fork("./build/services/keygen/AsyncKeygen.js");
-            //child sends a message
-            child.send(Keygen.bits);
-            child.on("message", (message) => {
-                Keygen.threads--;
-                log.info("Key received");
-                callback(message);
-                setTimeout(() => {
-                    let args = Keygen.queue.shift();
-                    if (args) {
-                        this.generateNewRSAKey(args.callback);
-                    }
-                });
+    // todo THIS SHOULD BE on the client???
+    public static generateNewRSAKey(): Promise<KeyPair> {
+        return new Promise((resolve) => {
+            log.info("" + Keygen.threads);
+            const keys = new NodeRSA({b:Keygen.bits});
+            return resolve({
+                public: keys.exportKey('pkcs8-public-pem').toString(),
+                private: keys.exportKey('pkcs8-private-pem').toString()
             });
-        }
+        });
     }
 
     public static encrypt(password: string, publicKey: string): string{
