@@ -69,23 +69,26 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
  * Create new key ring for user
  */
 apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
-    let userId = getUserId(req);
-    let ringName = getName(req);
-    let ringDescription = getDescription(req);
+    const userId = getUserId(req);
+    const ringName = getName(req);
+    const ringDescription = getDescription(req);
+    const publicKey = getPublicKey(req);
+    dbService.addNewKeyRing(userId, new KeyRing(undefined, ringName, ringDescription, publicKey, [])).then(fulfilled => {
+        res.sendStatus(201);
+    }, rejected => {
+        log.error("Error at creating new key ring: " + rejected);
+        res.sendStatus(500);
+    })
     // create and validate new keyring here
+    /*
     Keygen.generateNewRSAKey().then( keyPair => {
         //TODO should we expose the keyRingId? is it the "glboal" keyRing id or just the users?
         //TODO store the public key on the server --> the user is able to add new keys to the ring without using his private key all the time [public key can be generated from private key, but key.public exists already]
-        dbService.addNewKeyRing(userId, new KeyRing(undefined, ringName, ringDescription, keyPair.public, [])).then(fulfilled => {
-            res.send(keyPair.private);
-        }, rejected => {
-            log.error("Error at creating new key ring: " + rejected);
-            res.sendStatus(500);
-        })
+
     }).catch(error => {
         log.error('POST ' + req.url, error);
         res.sendStatus(500);
-    });
+    });*/
 });
 
 apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
@@ -183,7 +186,7 @@ function getUrl(req: Req): string {
 }
 
 function getPublicKey(req: Req): string {
-    return req.body["public-key"];
+    return req.body["publicKey"];
 }
 
 /** from body */

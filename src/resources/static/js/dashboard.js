@@ -1,18 +1,28 @@
 $(function () {
-
     loadKeyRings();
     // Button actions
-    $('.btn-addkeyring').on('click', function () { openFrame('addkeyring'); });
-    $('.btn-addpassword').on('click', function () { openFrame('addpassword'); });
+    $('.btn-addkeyring').on('click', function () {
+        openFrame('addkeyring');
+    });
+    $('.btn-addpassword').on('click', function () {
+        openFrame('addpassword');
+    });
     let form = $('.form-addkeyring');
     // Form bindings
     form.on('submit', function (e) {
-
-        $.post('/api/user/' + $.cookie('userid') + '/keyring', form.serialize(), function (data) {
-            let keyRingName = form.serialize().split("&")[0].split("=")[1];
+        const keys = new JSEncrypt({default_key_size:2048});
+        showLoader();
+        // generate new key
+        keys.getKey();
+        hideLoader();
+        const keyRingData = ConvertFormToJSON(form);
+        keyRingData.publicKey = keys.getPublicKeyString();
+        const privateKey = keys.getPrivateKeyString();
+        $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
+            let keyRingName = keyRingData.name;
             let element = document.createElement("a");
             element.setAttribute("download", keyRingName + ".pem");
-            element.setAttribute("href", "data:application/octet-stream;base64," + btoa(data));
+            element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
             element.click();
         }).fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
@@ -36,12 +46,23 @@ $(function () {
 
 });
 
+function ConvertFormToJSON(form){
+    var array = jQuery(form).serializeArray();
+    var json = {};
+
+    jQuery.each(array, function() {
+        json[this.name] = this.value || '';
+    });
+
+    return json;
+}
+
 var memory = {}
 
 function loadKeyRings() {
     // Loading keyrings from API
-    let keyrings = $('#keyrings');
-    keyrings.addClass("loading");
+    const keyrings = $('#keyrings');
+   showLoader();
     keyrings.html('');
 
     $.get('/api/user/' + $.cookie('userid') + '/keyring', function (keyringData) {
@@ -61,9 +82,19 @@ function loadKeyRings() {
         // Test
         keyrings.append('<div class="keyring" ref="666">Testring</div>');
 
-        keyrings.find('.keyring').on('click', function () { openKeyRing($(this)); });
-        keyrings.removeClass("loading");
+        keyrings.find('.keyring').on('click', function () {
+            openKeyRing($(this));
+        });
+        hideLoader();
     });
+}
+
+function showLoader(){
+    $('#keyrings').addClass('loading');
+}
+
+function hideLoader(){
+    $('#keyrings').removeClass('loading');
 }
 
 var currentKeyRingId;
