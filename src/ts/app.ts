@@ -14,23 +14,23 @@ const log = logFactory.getLogger('.server');
 
 export class Server {
 
-    private app: express.Application;
+    public app: express.Application;
     private port = this.normalizePort(Env.port || '3000');
     private httpServer: http.Server;
 
-    public static boostrap(): Server {
-        return new Server();
+    public static boostrap(port?:number): Server {
+        return new Server(port);
     }
 
-    private constructor() {
+    private constructor(port?: number) {
         this.app = express();
-        this.config();
+        this.config(port);
         this.connenctToDatabase();
         this.setRoutes();
         this.errorHandling();
     }
 
-    private config() {
+    private config(port?: number) {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
         // bind the auth before we init the static directories
@@ -44,6 +44,8 @@ export class Server {
         this.app.use('/dashboard.html', gatekeeper.staticAuth);
         this.app.use('/admin.html', gatekeeper.staticAuth);
         this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
+
+        this.port = (port != null) ? port : this.port;
 
         this.app.set('port', this.port);
         this.httpServer = http.createServer(this.app);

@@ -28,6 +28,7 @@
     "@types/mongodb": "^2.2.18",
     "@types/mongoose": "^4.7.31",
     "@types/node-rsa": "^0.4.1",
+    "@types/supertest": "^2.0.4",
     "chai": "^4.1.2",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
@@ -35,6 +36,7 @@
     "gulp-typescript": "^3.2.3",
     "mocha": "^4.1.0",
     "nodemon": "^1.14.3",
+    "supertest": "^3.0.0",
     "ts-node": "^4.1.0",
     "typescript": "^2.6.2",
     "typescript-logging": "^0.5.0"
