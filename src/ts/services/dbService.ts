@@ -76,13 +76,9 @@ export function registerUser(data: User): Promise<User> {
         });
 };
 
-export function deleteUser(data: User) {
-    scheme.User.findByIdAndRemove(data.id).then(res => {
-        return true;
-    }).catch(err => {
-        log.error('Error while removing User' + err);
-    });
-};
+export function deleteUser(key: string) {
+    return scheme.User.findByIdAndRemove(key);
+}
 
 function resetAll() {
     scheme.KeyRing.remove({}, () => {console.log("ring")});

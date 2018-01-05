@@ -53,7 +53,7 @@ apiRouter.post('/register', (req: Req, res: Res) => {
 
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
-apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
+apiRouter.get('/user/:uid/keyring', (req: Req, res: Res) => {
     /*
         Normally we would use the userId provided in the session, not in the request params
         -> This is a vulnerability, because EVERY user with a valid session can access other users keyrings
@@ -65,6 +65,16 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res, next: Next) => {
     }).catch(error => {
         log.error('GET ' + req.url, error);
         res.sendStatus(500);
+    });
+});
+
+apiRouter.delete('/user/:uid', (req: Req, res: Res) => {
+    const userId = getUserId(req);
+    dbService.deleteUser(userId).then(response => {
+        return res.sendStatus(200);
+    }).catch(err => {
+        log.error('Error while removing User' + err);
+        return res.sendStatus(500);
     });
 });
 
