@@ -99,7 +99,8 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
     const ringDescription = getDescription(req);
     const publicKey = getPublicKey(req);
     dbService.addNewKeyRing(userId, new KeyRing(undefined, ringName, ringDescription, publicKey, [])).then(fulfilled => {
-        res.sendStatus(201);
+        res.statusCode = 201;
+        res.send(fulfilled.id);
     }, rejected => {
         log.error("Error at creating new key ring: " + rejected);
         res.sendStatus(500);
