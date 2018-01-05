@@ -8,6 +8,7 @@ import {logFactory} from "../config/ConfigLog4J";
 import {KeyPair, KeyRing, User} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
 import {error} from "util";
+import {use} from "~chai/lib/Chai";
 
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -53,6 +54,15 @@ apiRouter.post('/register', (req: Req, res: Res) => {
 
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
+apiRouter.get('/user', ((req, res) => {
+    dbService.listUsers().then( users => {
+        res.send(users);
+    }).catch( err => {
+        log.error('GET /user', err);
+        res.sendStatus(500);
+    })
+}));
+
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res) => {
     /*
         Normally we would use the userId provided in the session, not in the request params
@@ -77,6 +87,8 @@ apiRouter.delete('/user/:uid', (req: Req, res: Res) => {
         return res.sendStatus(500);
     });
 });
+
+
 
 /**
  * Create new key ring for user

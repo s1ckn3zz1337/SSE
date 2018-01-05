@@ -34,7 +34,10 @@ export function initDBConnection() {
 
 export function getUserById(userid: string): Promise<User> {
     // todo why do we need a KeyRing sheme in the db, if we are storing everything in the User object? 
-    return scheme.User.findById(userid).populate({path: "keyrings", populate: {path: "keyEntities", model: "KeyEntity"}}).exec()
+    return scheme.User.findById(userid).populate({
+        path: "keyrings",
+        populate: {path: "keyEntities", model: "KeyEntity"}
+    }).exec()
         .then(result => User.getFromDocument(result))
         .catch(reject => {
             log.error(JSON.stringify(reject));
@@ -76,14 +79,35 @@ export function registerUser(data: User): Promise<User> {
         });
 };
 
+export function listUsers() {
+    return new Promise<Array<User>>((resolve, reject) => {
+        scheme.User.find({}).then(res => {
+            const users = new Array<User>();
+            res.forEach(one => {
+                users.push(User.getFromDocument(one))
+            });
+            return resolve(users);
+        }).catch(err => {
+            log.error('listUsers: ', err);
+            return reject(err);
+        })
+    })
+}
+
 export function deleteUser(key: string) {
     return scheme.User.findByIdAndRemove(key);
 }
 
 function resetAll() {
-    scheme.KeyRing.remove({}, () => {console.log("ring")});
-    scheme.User.remove({}, () => {console.log("user")});
-    scheme.KeyEntity.remove({}, () => {console.log("entity")});
+    scheme.KeyRing.remove({}, () => {
+        console.log("ring")
+    });
+    scheme.User.remove({}, () => {
+        console.log("user")
+    });
+    scheme.KeyEntity.remove({}, () => {
+        console.log("entity")
+    });
     console.log("Deleted all");
 }
 
@@ -139,16 +163,16 @@ function addExistingKeyEntity(ringId: string, data: KeyEntity): Promise<KeyEntit
 
 export function addNewKeyEntity(userId: string, ringId: string, keyEntity: KeyEntity): Promise<KeyEntity> {
     return new Promise<KeyEntity>((resolve, reject) => {
-        getUserById(userId).then( user => {
-            if(user.keyrings.find(value =>{
+        getUserById(userId).then(user => {
+            if (user.keyrings.find(value => {
                     return value.id == ringId;
-                })){
-                return createNewKeyEntity(keyEntity).then( resolve => {
+                })) {
+                return createNewKeyEntity(keyEntity).then(resolve => {
                     keyEntity.id = resolve.id;
-                    console.log("RingId: "+ringId);
+                    console.log("RingId: " + ringId);
                     return addExistingKeyEntity(ringId, keyEntity)
                 })
-            }else{
+            } else {
                 reject(new Error('userId doesnt have the provided key id, something is wrong, maybe hack attemnt'));
             }
         });
