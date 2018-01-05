@@ -116,6 +116,15 @@ apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
     });
 });
 
+apiRouter.delete('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
+    dbService.deleteKeyRing(getKeyRingId(req)).then(keyring => {
+        res.sendStatus(200);
+    }).catch(error => {
+        log.error('GET ' + req.url + ": " + error);
+        res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    });
+});
+
 apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
     const userId = getUserId(req);
     const kid = getKeyRingId(req);

@@ -146,8 +146,8 @@ export function addNewKeyRing(userId: string, data: KeyRing): Promise<KeyRing> {
         });
 };
 
-export function deleteKeyRing(data: KeyRing) {
-    return scheme.KeyRing.findByIdAndRemove(data.id);
+export function deleteKeyRing(id: string) {
+    return scheme.KeyRing.findByIdAndRemove(id);
 };
 
 function createNewKeyEntity(keyEntity: KeyEntity): Promise<KeyEntityDocument> {
