@@ -98,6 +98,10 @@ export function deleteUser(key: string) {
     return scheme.User.findByIdAndRemove(key);
 }
 
+export function deleteKeyRings(ids: Array<string>) {
+    return scheme.KeyRing.remove({id: ids});
+}
+
 function resetAll() {
     scheme.KeyRing.remove({}, () => {
         console.log("ring")
