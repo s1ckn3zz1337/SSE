@@ -166,4 +166,4 @@ export class Server {
 }
 
 
-Server.boostrap();
+//Server.boostrap();
