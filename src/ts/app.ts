@@ -22,6 +22,10 @@ export class Server {
         return new Server(port);
     }
 
+    public shutdown(): void {
+        this.httpServer.close();
+    }
+
     private constructor(port?: number) {
         this.app = express();
         this.config(port);
