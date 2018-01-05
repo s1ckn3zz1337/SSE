@@ -1,14 +1,10 @@
 import * as Express from "express";
-import * as session from "express-session";
 import {Response as Res, Request as Req, NextFunction as Next} from "express";
 import * as GateKeeper from "../handler/gatekeeper";
 import * as dbService from '../services/dbService'
-import {Keygen} from "../services/keygen/keygen";
 import {logFactory} from "../config/ConfigLog4J";
 import {KeyPair, KeyRing, User} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
-import {error} from "util";
-import {use} from "~chai/lib/Chai";
 
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -17,6 +13,7 @@ export const apiRouter = Express.Router();
 apiRouter.use('/login', verifyLoginRequestParameter);
 
 apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
+    log.info(`POST /login ${req.ip} called`);
     const username = getUsername(req);
     const password = getPassword(req);
     log.debug(`/login req: ${username} pwd: ${password}`);
@@ -37,7 +34,7 @@ apiRouter.post('/login', (req: Req, res: Res, next: Next) => {
 apiRouter.use('/register', verifyRequestParameter);
 
 apiRouter.post('/register', (req: Req, res: Res) => {
-    log.info("Register called");
+    log.info(`POST /register ${req.ip} called`);
     const username = getUsername(req);
     const password = getPassword(req);
     const email = getEmail(req);
@@ -55,6 +52,7 @@ apiRouter.post('/register', (req: Req, res: Res) => {
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
 apiRouter.get('/user', ((req, res) => {
+    log.info(`ADMIN: GET /user ${req.ip} called`);
     dbService.listUsers().then( users => {
         res.send(users);
     }).catch( err => {
@@ -64,6 +62,7 @@ apiRouter.get('/user', ((req, res) => {
 }));
 
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res) => {
+    log.info(`GET /user/:uid/keyringr ${req.ip} called`);
     /*
         Normally we would use the userId provided in the session, not in the request params
         -> This is a vulnerability, because EVERY user with a valid session can access other users keyrings
@@ -79,6 +78,7 @@ apiRouter.get('/user/:uid/keyring', (req: Req, res: Res) => {
 });
 
 apiRouter.delete('/user/:uid', (req: Req, res: Res) => {
+    log.info(`ADMIN: DELETE /user/:uid ${req.ip} called`);
     const userId = getUserId(req);
     dbService.deleteUser(userId).then(response => {
         return res.sendStatus(200);
