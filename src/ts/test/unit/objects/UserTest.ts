@@ -1,3 +1,4 @@
+import { suite, test, slow, timeout } from "mocha-typescript";
 import {User} from '../../../objects/User';
 import * as crypto from '../../../services/cryptoService'
 import {expect} from 'chai';

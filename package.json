@@ -5,7 +5,7 @@
   "scripts": {
     "start-dev": "nodemon ./build/app.js",
     "debug": "nodemon --inspect-brk ./build/app.js",
-    "test": "mocha -r ts-node/register src/ts/test/**/**Test.ts"
+    "test": "mocha --require ts-node/register build/test/**/**/**Test.js --exit"
   },
   "dependencies": {
     "@types/express-session": "^1.15.6",
@@ -18,7 +18,8 @@
     "logger": "0.0.1",
     "mocha": "^4.0.1",
     "mongoose": "^4.13.8",
-    "node-rsa": "^0.4.2"
+    "node-rsa": "^0.4.2",
+    "typescript-logging": "^0.5.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.8",
@@ -35,6 +36,7 @@
     "gulp-sourcemaps": "^2.6.2",
     "gulp-typescript": "^3.2.3",
     "mocha": "^4.1.0",
+    "mocha-typescript": "^1.1.12",
     "nodemon": "^1.14.3",
     "supertest": "^3.0.0",
     "ts-node": "^4.1.0",

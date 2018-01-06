@@ -1,5 +1,5 @@
-import {expect} from 'chai';
-import supertest = require("supertest");
+import { suite, test, slow, timeout } from "mocha-typescript";
+import * as supertest from 'supertest';
 import {Server} from '../../../app'
 import * as dbService from '../../../services/dbService';
 import {User} from "../../../objects/User";

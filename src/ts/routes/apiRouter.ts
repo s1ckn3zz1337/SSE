@@ -3,7 +3,8 @@ import {Response as Res, Request as Req, NextFunction as Next} from "express";
 import * as GateKeeper from "../handler/gatekeeper";
 import * as dbService from '../services/dbService'
 import {logFactory} from "../config/ConfigLog4J";
-import {KeyPair, KeyRing, User} from "../objects/Model";
+import {User} from "../objects/User";
+import {KeyPair, KeyRing} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
 
 const log = logFactory.getLogger('.apiRouter.ts');
