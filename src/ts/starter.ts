@@ -1,2 +1,2 @@
 import {Server} from "./app";
-Server.boostrap();
+Server.bootstrap();

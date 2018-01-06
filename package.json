@@ -3,8 +3,8 @@
   "version": "6.9.1",
   "private": true,
   "scripts": {
-    "start-dev": "nodemon ./build/app.js",
-    "debug": "nodemon --inspect-brk ./build/app.js",
+    "start-dev": "nodemon ./build/starter.js",
+    "debug": "nodemon --inspect-brk ./build/starter.js",
     "test": "mocha --require ts-node/register build/test/**/**/**Test.js --exit"
   },
   "dependencies": {

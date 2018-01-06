@@ -42,7 +42,7 @@ describe('api router test', () => {
     let supertestapp: supertest.SuperTest<supertest.Test>;
     before(done => {
         createdKeyRings = [];
-        app = Server.boostrap(3002);
+        app = Server.bootstrap(3002);
         supertestapp = supertest(app.app);
         dbService.initDBConnection();
         testUser = new User('', USERNAME, USERPASS, 'test@email.com', [], false);
