@@ -18,7 +18,7 @@ export class Server {
     private port = this.normalizePort(Env.port || '3000');
     private httpServer: http.Server;
 
-    public static boostrap(port?:number): Server {
+    public static bootstrap(port?:number): Server {
         return new Server(port);
     }
 
