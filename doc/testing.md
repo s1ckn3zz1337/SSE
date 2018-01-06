@@ -1,3 +1,6 @@
-How to: Mock dependencies in typescript for testing
+Used dependencies for testing:
 
-http://michaellawrie.com/simple-typescript-dependency-injection
+mocha and mocha typescript:
+
+https://github.com/pana-cc/mocha-typescript
+
