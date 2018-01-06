@@ -79,7 +79,7 @@ docker run -p 27017:27017 --name sse-database -d mongo --auth
 ```
 docker exec -it sse-database mongo admin
 db.createUser({ user: 'admin', pwd: 'some-initial-password', roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] });
-db.auth('admin', 'some-inital-password');
+db.auth('admin', 'some-initial-password');
 ```
 
 5. Add DB user
