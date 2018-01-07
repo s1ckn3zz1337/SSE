@@ -1,6 +1,9 @@
 $(function () {
     loadKeyRings();
     // Button actions
+    $('.btn-load-private-key-proxy').click(function(){
+        $('#keyringprivatekey').click();
+    });
     $('.btn-decryptpassword').on('click', function () {
         decryptPasswords();
     });

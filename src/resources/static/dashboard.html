@@ -22,9 +22,9 @@
         <div class="frame keyring">
             <h1 id="keyringname"></h1>
             <div id="passwords">
-
             </div>
-            <input id="keyringprivatekey" name="" type="file" accept=".pem">
+            <button class="btn btn-lg btn-primary btn-block btn-load-private-key-proxy" type="file" accept=".pem">Öffne PrivateKey</button>
+            <input id="keyringprivatekey" style="display:none" type="file" accept=".pem"><br>
             <button class="btn btn-lg btn-primary btn-block btn-decryptpassword">Passwörter entschlüsseln</button><br>
             <button class="btn btn-lg btn-primary btn-block btn-addpassword">Neues Passwort anlegen</button><br>
             <a href="#" onclick="openFrame('keyrings')" class="forgot-password">
