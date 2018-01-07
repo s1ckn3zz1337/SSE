@@ -19,6 +19,12 @@ export class KeyRing implements IKeyRing {
     public static getFromDocument(ringDoc: KeyRingDocument): KeyRing{
         return new KeyRing(ringDoc.id, ringDoc.name, ringDoc.description, ringDoc.publicKey, KeyEntity.getFromDocuments(ringDoc.keyEntities));
     }
+
+    public getKeyEntity(entId: string){
+        return this.keyEntities.find( ent => {
+            return ent.id === entId;
+        })
+    }
 }
 export interface IKeyRing {
     id: string,
