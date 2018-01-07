@@ -23,7 +23,6 @@
             <h1 id="keyringname"></h1>
             <div id="passwords">
             </div>
-            <button class="btn btn-lg btn-primary btn-block btn-load-private-key-proxy" type="file" accept=".pem">Öffne PrivateKey</button>
             <input id="keyringprivatekey" style="display:none" type="file" accept=".pem"><br>
             <button class="btn btn-lg btn-primary btn-block btn-decryptpassword">Passwörter entschlüsseln</button><br>
             <button class="btn btn-lg btn-primary btn-block btn-addpassword">Neues Passwort anlegen</button><br>
@@ -51,11 +50,11 @@
         <div class="frame addpassword">
             <h1>Passwort hinzufügen</h1>
             <form class="form form-addpassword">
-                <input type="text" id="inputName" class="form-control" placeholder="Name" name="name" required autofocus>
+                <input type="text" class="form-control" placeholder="Name" name="name" required autofocus>
                 <textarea class="form-control" placeholder="Beschreibung" name="description"></textarea>
-                <input type="text" id="inputName" class="form-control" placeholder="Webseiten URL" name="url">
-                <input type="text" id="inputName" class="form-control" placeholder="Benutzer" name="username" required>
-                <input type="text" id="inputName" class="form-control" placeholder="Passwort" name="password" required>
+                <input type="text" class="form-control" placeholder="Webseiten URL" name="url">
+                <input type="text" class="form-control" placeholder="Benutzer" name="username" required>
+                <input type="text" class="form-control" placeholder="Passwort" name="password" required>
                 <input type="hidden" name="idkeyring" value="" id="input-idkeyring">
                 <input type="hidden" name="publicKey" value="" id="input-public-key">
                 <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Anlegen</button>
