@@ -63,7 +63,7 @@ apiRouter.get('/user', ((req, res) => {
 }));
 
 apiRouter.get('/user/:uid/keyring', (req: Req, res: Res) => {
-    log.info(`GET /user/:uid/keyringr ${req.ip} called`);
+    log.info(`GET /user/:uid/keyring ${req.ip} called`);
     /*
         Normally we would use the userId provided in the session, not in the request params
         -> This is a vulnerability, because EVERY user with a valid session can access other users keyrings
