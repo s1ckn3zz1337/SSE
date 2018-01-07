@@ -49,9 +49,11 @@ apiRouter.post('/register', (req: Req, res: Res) => {
     })
 });
 
-
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
+// USE USER AUTHENTICATION INSTEAD OF ADMIN -> USER WILL BE ABLE TO PERFORM ADMIN CMDS
+
+apiRouter.get('/user', GateKeeper.gateKeeperUser);
 apiRouter.get('/user', ((req, res) => {
     log.info(`ADMIN: GET /user ${req.ip} called`);
     dbService.listUsers().then( users => {
@@ -118,6 +120,7 @@ apiRouter.get('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
 });
 
 apiRouter.delete('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
+    log.info('DELETE ' + req.url);
     dbService.deleteKeyRing(getKeyRingId(req)).then(keyring => {
         res.sendStatus(200);
     }).catch(error => {

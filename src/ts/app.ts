@@ -18,15 +18,15 @@ export class Server {
     private port = this.normalizePort(Env.port || '3000');
     private httpServer: http.Server;
 
-    public static bootstrap(port?:number): Server {
-        return new Server(port);
+    public static bootstrap(port?:number, debug?:boolean): Server {
+        return new Server(port, debug);
     }
 
     public shutdown(): void {
         this.httpServer.close();
     }
 
-    private constructor(port?: number) {
+    private constructor(port?: number, debug?:boolean) {
         this.app = express();
         this.config(port);
         this.connenctToDatabase();

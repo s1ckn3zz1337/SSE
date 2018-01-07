@@ -1,4 +1,4 @@
-import { suite, test, slow, timeout } from "mocha-typescript";
+import {suite, test, slow, timeout} from "mocha-typescript";
 import * as supertest from 'supertest';
 import {Server} from '../../../app'
 import * as dbService from '../../../services/dbService';
@@ -47,11 +47,11 @@ describe('api router test', () => {
         dbService.initDBConnection();
         testUser = new User('', USERNAME, USERPASS, 'test@email.com', [], false);
         dbService.registerUser(testUser).then(result => {
-            testKeyRing = new KeyRing('', rightKeyRing.name, rightKeyRing.description, rightKeyRing.publicKey, []);
-            dbService.addNewKeyRing(result.id, testKeyRing).then( res =>{
-                testKeyRing.id = res.id;
-                done();
-            });
+                testKeyRing = new KeyRing('', rightKeyRing.name, rightKeyRing.description, rightKeyRing.publicKey, []);
+                dbService.addNewKeyRing(result.id, testKeyRing).then(res => {
+                    testKeyRing.id = res.id;
+                    done();
+                });
             }
         ).catch(err => {
                 done(err)
@@ -153,7 +153,14 @@ describe('api router test', () => {
                 }
             });
         });
-        it('should delete keyring on valid request');
+        it('should delete keyring on valid request', done => {
+            supertest(app.app).delete('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').set('Cookie', authCoockie).send().expect(200).end((err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            });
+        });
         it('MISUSE CASE should be able to remove other user keyring');
         /*
         Ignore this test, as we allow this vulnerability
@@ -169,7 +176,7 @@ describe('api router test', () => {
         });
 
         xit('MISUSE CASE should return 500 if we try to get keyring from other user', done => {
-            supertestapp.get('/api/user/' + createdUserId + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').set('Cookie', authCoockie).send().expect(500).end((err, res)=>{
+            supertestapp.get('/api/user/' + createdUserId + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').set('Cookie', authCoockie).send().expect(500).end((err, res) => {
                 if (err) done(err);
                 else {
                     done();
@@ -178,15 +185,36 @@ describe('api router test', () => {
         })
     });
     describe('key entity test', () => {
-        it('should block non authenticated access');
+        it('should block non authenticated access', done => {
+            supertestapp.post('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').send({}).expect(401).end(((err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            }))
+        });
         it('should create new keyring on valid input');
-        it('can not create key entity if ring doesnt exist');
+        it('can not create key entity if ring doesn\'t exist');
         it('can not create key entity on a existing ring of a different user');
     });
 
     describe('user test', () => {
         it('should block non authenticated & not admin access');
-        it('list all users');
-        it('remove an existing user');
+        it('list all users', done => {
+            supertestapp.get('/api/user/').set('Cookie', authCoockie).send({}).expect(200, (err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            })
+        });
+        it('remove an existing user', done => {
+            supertestapp.delete('/api/user/' + createdUserId).set('Cookie', authCoockie).send({}).expect(200, (err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            })
+        });
     })
 });
