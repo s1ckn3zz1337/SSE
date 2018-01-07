@@ -11,6 +11,7 @@ const log = logFactory.getLogger('.User.ts');
 export class User implements IUser {
 
     public password: string;
+
     // better would be to stor the keyrings as ids -> otherwise why the hell do we need KeyRing object and table?:
     constructor(public id: string, public username: string, password: string, public email: string, public keyrings: KeyRing[], fromdb?: boolean) {
         if (fromdb == false) {
@@ -65,6 +66,13 @@ export class User implements IUser {
         }
     }
 
+    getKeyEntityById(entId: string) {
+        return this.keyrings.find(ring => {
+            const exists = ring.getKeyEntity(entId);
+            return exists != null;
+        });
+    }
+
     public static getFromDocuments(userDocs: UserDocument[]): User[] {
         let users = new Array(userDocs.length);
         for (let i = 0; i < userDocs.length; i++) {
@@ -74,7 +82,7 @@ export class User implements IUser {
         return users;
     }
 
-    public static getFromDocument(userDoc: UserDocument): User{
+    public static getFromDocument(userDoc: UserDocument): User {
         return new User(userDoc.id, userDoc.username, userDoc.password, userDoc.email, KeyRing.getFromDocuments(userDoc.keyrings), true);
     }
 }

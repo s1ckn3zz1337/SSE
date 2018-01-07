@@ -141,6 +141,24 @@ apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
     });
 });
 
+apiRouter.delete('/user/:uid/keyring/:kid/key/:eid', (req: Req, res: Res) => {
+    const userId = getUserId(req);
+    const entId = getKeyEntityId(req);
+    dbService.getUserById(userId).then( user => {
+        if(user.getKeyEntityById(entId) != null){
+            dbService.deleteKeyEntity(new KeyEntity(entId, undefined, undefined, undefined, undefined)).then(keyring => {
+                return res.sendStatus(200);
+            })
+        }else{
+            log.error('/DELETE ' + userId + 'ringid: ' +  entId + ' failen, id not found on provided user');
+            return res.sendStatus(400);
+        }
+    }).catch(error => {
+        log.error('GET ' + req.url + ": " + error);
+        return res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    });
+});
+
 apiRouter.get('/admin', (req: Req, res: Res, next: Next) => {
     res.send('you are an admin!');
     next();
@@ -195,6 +213,10 @@ function getName(req: Req): string {
 /** from body */
 function getDescription(req: Req): string {
     return req.body['description'];
+}
+
+function getKeyEntityId(req: Req):string {
+    return req.params['eid'];
 }
 
 /** from body */
