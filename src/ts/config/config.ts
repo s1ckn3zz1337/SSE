@@ -4,7 +4,7 @@ export class Env {
     public static readonly webContentDir = '/static';
     public static readonly port = 3000;
     public static readonly mongoDB: MongoConfig = {
-        host: 'localhost',
+        host: '127.0.0.1',
         port: 27017,
         user: 'sseuser',
         password: 'Z2xQK8tASSDF8ZcU3XuSLzNY',
