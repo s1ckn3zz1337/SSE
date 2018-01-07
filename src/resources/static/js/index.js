@@ -1,5 +1,4 @@
 $(function () {
-
     var login = $('.form-signin');
 
     login.on('submit', function (e) {

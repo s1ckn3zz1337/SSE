@@ -40,9 +40,9 @@ apiRouter.post('/register', (req: Req, res: Res) => {
     const password = getPassword(req);
     const email = getEmail(req);
     const user = new User(undefined, username, password, email, [], false);
-    user.register().then(data => {
-        log.info(JSON.stringify(data));
-        res.status(201).send({message: 'Successfully registered!', id: data.id});
+    user.register().then(registeredUser => {
+        log.info(JSON.stringify(registeredUser));
+        res.status(201).send({message: 'Successfully registered!', id: registeredUser.id});
     }).catch(error => {
         log.error("POST " + req.url, error);
         res.sendStatus(500);
@@ -90,7 +90,6 @@ apiRouter.delete('/user/:uid', (req: Req, res: Res) => {
         return res.sendStatus(500);
     });
 });
-
 
 
 /**

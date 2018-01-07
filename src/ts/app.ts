@@ -43,7 +43,9 @@ export class Server {
             secret: Math.random().toString(36),
             cookie: {secure: false, httpOnly: true},
             resave: false,
-            saveUninitialized: false
+            saveUninitialized: false,
+            //https://expressjs.com/de/advanced/best-practice-security.html
+            name: "differentSessionName"
         }));
         this.app.use('/dashboard.html', gatekeeper.staticAuth);
         this.app.use('/admin.html', gatekeeper.staticAuth);
@@ -60,20 +62,6 @@ export class Server {
     }
 
     private errorHandling() {
-        /*
-        //simulate error at every second call
-        let toggleSimulation = true;
-        this.app.use((req: Req, res: Res, next: Next) => {
-          toggleSimulation = !toggleSimulation;
-          if (toggleSimulation) {
-            const err: any = new Error('Simulated error, refresh again');
-            err.status = 404;
-            return next(err);
-          } else {
-            return next();
-          }
-        });
-        */
         this.app.use((err: any, req: Req, res: Res, next: Next) => {
             // set locals, only providing error in development
             res.locals.message = err.message;

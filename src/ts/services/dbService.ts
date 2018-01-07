@@ -81,16 +81,20 @@ export function registerUser(data: User): Promise<User> {
 
 export function listUsers() {
     return new Promise<Array<User>>((resolve, reject) => {
-        scheme.User.find({}).then(res => {
-            const users = new Array<User>();
-            res.forEach(one => {
-                users.push(User.getFromDocument(one))
-            });
-            return resolve(users);
-        }).catch(err => {
-            log.error('listUsers: ', err);
-            return reject(err);
-        })
+        scheme.User.find({}).populate({
+            path: "keyrings",
+            populate: {path: "keyEntities", model: "KeyEntity"}
+        }).exec()
+            .then(res => {
+                const users = new Array<User>();
+                res.forEach(one => {
+                    users.push(User.getFromDocument(one))
+                });
+                return resolve(users);
+            }).catch(err => {
+                log.error('listUsers: ', err);
+                return reject(err);
+            })
     })
 }
 

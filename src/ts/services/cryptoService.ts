@@ -14,7 +14,7 @@ const sha512 = function (password: string, salt: string) {
 };
 
 export function saltHashPassword(userpassword: string, username: string){
-    log.info('name: ' + username + 'password: ' + userpassword);
+    log.info('name: ' + username + ' password: ' + userpassword);
     const sha513 = sha512(userpassword, username);
     return sha513;
 }
