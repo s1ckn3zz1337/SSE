@@ -1,9 +1,6 @@
 $(function () {
     loadKeyRings();
     // Button actions
-    $('.btn-load-private-key-proxy').click(function(){
-        $('#keyringprivatekey').click();
-    });
     $('.btn-decryptpassword').on('click', function () {
         decryptPasswords();
     });
@@ -110,22 +107,52 @@ function hideLoader(){
 
 var currentKeyRingId;
 
+const passwordDisplay = `password-display`;
+const showHide = `show-hide`;
+
 function decryptPasswords(){
-    if($('#keyringprivatekey')[0].files.length > 0) {
-        const r = new FileReader();
-        r.onload = function(e) {
-            const privateKey = e.target.result;
-            const cryptor = new JSEncrypt();
-            cryptor.setPrivateKey(privateKey);
-            for(let i = 0; i < memory[currentKeyRingId].keyEntities.length; i++){
-                let currentKey = memory[currentKeyRingId].keyEntities[i];
-                currentKey.decryptedPassword = cryptor.decrypt(currentKey.keyEncryptedPassword);
+    const fileInput = document.getElementById("keyringprivatekey");
+    fileInput.addEventListener('change', function(fileOpenEvent){
+        const files = fileOpenEvent.target.files;
+        if(files.length > 0) {
+            if(files.length > 1){
+                alert("Only the first of the selected files will be used as your private key");
             }
-        };
-        r.readAsText($('#keyringprivatekey')[0].files[0]);
-    }else{
-        alert('No file specified, cannot decrypt :(');
-    }
+            const r = new FileReader();
+            r.onload = function (fileLoadEvent) {
+                const privateKey = fileLoadEvent.target.result;
+                const cryptor = new JSEncrypt();
+                cryptor.setPrivateKey(privateKey);
+                for (let i = 0; i < memory[currentKeyRingId].keyEntities.length; i++) {
+                    let currentKey = memory[currentKeyRingId].keyEntities[i];
+                    currentKey.decryptedPassword = cryptor.decrypt(currentKey.keyEncryptedPassword);
+                    addDecryptedPasswordField(currentKey.id, currentKey.decryptedPassword);
+                }
+                addShowHideHandlers();
+            };
+            r.readAsText($('#keyringprivatekey')[0].files[0]);
+        }else{
+            alert('No file specified, cannot decrypt :(');
+        }
+    }, false);
+    fileInput.click();
+}
+
+function addShowHideHandlers(){
+    $('.' + showHide).change(function () {
+        let $display = $(`.` + passwordDisplay + `[ref='` + $(this).attr('ref') + `']`);
+        if ($(this).is(":checked")) {
+            $display.attr('type', 'text');
+        } else {
+            $display.attr('type', 'password');
+        }
+    });
+}
+
+function addDecryptedPasswordField(keyId, decryptedPassword) {
+    const pwDiv = $(".password[ref=" + keyId + "]");
+    pwDiv.after(`<input type='password' class='`+ passwordDisplay + `' ref='` + keyId + `' value='` + decryptedPassword + `'></input>
+                 <input type="checkbox" class="show-hide" ref='`+ keyId + `' name="show-hide" value="" />`);
 }
 
 function openKey(key) {
@@ -143,6 +170,7 @@ function openKeyRing(keyring) {
     $('#input-public-key').val(memory[currentKeyRingId].publicKey);
 
     var passwords = $('#passwords');
+    passwords.html('');
 
     $.get('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId, function (ring) {
         let passwds = ring.keyEntities;
