@@ -70,7 +70,7 @@ var memory = {}
 function loadKeyRings() {
     // Loading keyrings from API
     const keyrings = $('#keyrings');
-   showLoader();
+    showLoader();
     keyrings.html('');
 
     $.get('/api/user/' + $.cookie('userid') + '/keyring', function (keyringData) {
