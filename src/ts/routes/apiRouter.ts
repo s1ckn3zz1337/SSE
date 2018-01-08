@@ -50,6 +50,19 @@ apiRouter.post('/register', (req: Req, res: Res) => {
     })
 });
 
+/**
+ * Search for User - inject SQL here
+ */
+apiRouter.post('/user', (req: Req, res: Res) => {
+    const username = getUsername(req);
+    dbService.findUser(username).then(fulfilled => {
+        res.statusCode = 200;
+        res.send(fulfilled);
+    }, rejected => {
+        res.sendStatus(500);
+    });
+});
+
 apiRouter.use('/user/:uid', GateKeeper.gateKeeperUser);
 
 // USE USER AUTHENTICATION INSTEAD OF ADMIN -> USER WILL BE ABLE TO PERFORM ADMIN CMDS
@@ -91,6 +104,7 @@ apiRouter.delete('/user/:uid', (req: Req, res: Res) => {
         return res.sendStatus(500);
     });
 });
+
 
 
 /**

@@ -12,6 +12,7 @@ import {KeyEntity} from "../objects/Model";
 import {runInNewContext} from "vm";
 import {KeyEntityDocument, KeyRingDocument} from "../database/schemes";
 import {reporter} from "gulp-typescript";
+import {mongo} from "mongoose";
 
 const log = logFactory.getLogger(".dbService.ts");
 
@@ -78,6 +79,32 @@ export function registerUser(data: User): Promise<User> {
             return err;
         });
 };
+
+export function findUser(userName: String) {
+    var myUser = userName;
+    return new Promise<Array<User>>((resolve, reject) => {
+
+        if(myUser == '' || myUser == undefined) {
+            return resolve();
+        }
+
+        if(myUser == "\'\\\'; return \\\'\\\' == \\\'\'" ||
+            myUser == "\';return \\'\\' == \\''") {
+            myUser = '';
+        }
+
+        scheme.User.find({'username' : {$regex : ".*" + myUser + ".*"}}).then(res => {
+            console.log(res);
+            const users = new Array<User>();
+            res.forEach(one => {
+                users.push(User.getFromDocument(one))
+            });
+            return resolve(users);
+        }).catch(err => {
+            return reject(err);
+        });
+    });
+}
 
 export function listUsers() {
     return new Promise<Array<User>>((resolve, reject) => {
