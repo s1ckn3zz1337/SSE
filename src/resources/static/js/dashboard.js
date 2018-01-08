@@ -20,7 +20,6 @@ $(function () {
         keys.getKey();
         hideLoader();
         const keyRingData = ConvertFormToJSON(formAddKeyring);
-        console.dir(keyRingData);
         keyRingData.publicKey = keys.getPublicKey();
         const privateKey = keys.getPrivateKey();
         $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
@@ -49,9 +48,7 @@ $(function () {
     });
     let formAddPassword = $('.form-addpassword');
     formAddPassword.on('submit', function (e) {
-
         formAddPassword.find("button").attr('disabled', true); // Button deaktivieren
-
         const formData = ConvertFormToJSON(formAddPassword);
         const cryptor = new JSEncrypt();
         cryptor.setPublicKey(formData.publicKey);
