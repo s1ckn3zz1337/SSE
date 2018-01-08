@@ -194,4 +194,5 @@ h1
     float: right;
     vertical-align: text-bottom;
     margin-top: 2px;
+    cursor: pointer;
 }

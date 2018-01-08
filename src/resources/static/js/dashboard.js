@@ -192,13 +192,20 @@ function openKeyRing(keyring) {
             passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
         else {
             for (var i = 0; i < passwds.length; i++) {
-                passwords.append('<div class="password" ref="' + passwds[i].id + '">' + passwds[i].keyName + '</div>');
+                passwords.append('<div class="password" ref="' + passwds[i].id + '">' + passwds[i].keyName + ' <div class="delete"></div></div>');
             }
         }
 
     }, 'JSON').fail(function () {
         passwords.append('<div class="warning">Fehler beim Laden der Passwörter.</div>');
     }).always(function () {
+        passwords.find('.password .delete').on('click', function (e) {
+            deletePassword($(this).parent());
+            e.stopPropagation();
+        });
+        //passwords.find('.password').on('click', function () {
+        //    openPassword($(this));
+        //});
     });
 
     openFrame('keyring');
@@ -209,14 +216,29 @@ function deleteKeyRing(keyring)
     var name = keyring.text();
     var idkeyring = keyring.attr("ref");
 
+    sendApiDelete('/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring, function () { keyring.remove(); }, 'Fehler beim Löschen des Schlüsselbunds '+name+'!');
+}
+
+function deletePassword(password)
+{
+    var name = password.text();
+    var idpassword = password.attr("ref");
+
+    sendApiDelete('/api/user/' + $.cookie('userid') + '/keyring/'+currentKeyRingId+'/key/'+idpassword, function () { password.remove(); }, 'Fehler beim Löschen des Passworts '+name+'!');
+}
+
+function sendApiDelete(url, successCallback, failMessage)
+{
     $.ajax({
-        url: '/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring,
+        url: url,
         type: 'DELETE',
         success: function(result) {
-            keyring.remove();
+            successCallback();
         },
-        fail: function () {
-            alert('Fehler beim Löschen des Schlüsselbunds '+name+'!');
+        error: function (result) {
+            alert(failMessage);
+            //@DEBUG
+            console.log(result);
         }
     });
 }
