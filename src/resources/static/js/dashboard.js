@@ -10,8 +10,8 @@ $(function () {
     $('.btn-addpassword').on('click', function () {
         openFrame('addpassword');
     });
-    let form = $('.form-addkeyring');
     // Form bindings
+    let form = $('.form-addkeyring');
     form.on('submit', function (e) {
 
         form.find("button").attr('disabled', true); // Button deaktivieren
@@ -41,18 +41,23 @@ $(function () {
 
         e.preventDefault();
     });
-    $('.form-addpassword').on('submit', function (e) {
-        const formData = ConvertFormToJSON($('.form-addpassword'));
+    form = $('.form-addpassword');
+    form.on('submit', function (e) {
+
+        form.find("button").attr('disabled', true); // Button deaktivieren
+
+        const formData = ConvertFormToJSON(form);
         const cryptor = new JSEncrypt();
         cryptor.setPublicKey(formData.publicKey);
         formData.password = cryptor.encrypt(formData.password);
         formData.publicKey = '';
         $.post('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId + '/key', formData, function (response) {
+            form.find('input[type=text],textarea').val('');
         }).fail(function () {
             alert("Passwort konnte nicht angelegt werden.");
         }).always(function () {
-            openFrame('passwords');
-            loadKeyRings();
+            openFrame('keyring');
+            form.find("button").attr('disabled', false); // Button aktivieren
         });
         e.preventDefault();
     });
