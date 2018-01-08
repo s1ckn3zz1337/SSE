@@ -170,8 +170,17 @@ function addDecryptedPasswordField(keyId, decryptedPassword) {
                  <input type="checkbox" class="show-hide" ref='`+ keyId + `' name="show-hide" value="" />`);
 }
 
-function openKey(key) {
-    // todo add page if there is a decrypted password, add it too
+function openPassword(key) {
+    $.get('/api/user/' + $.cookie('userid') + '/keyring/'+currentKeyRingId+'/key/'+key, function (data) {
+        console.log(data);
+
+        $('#keyName').text(data.keyName);
+        $('#keyDescription').text(data.keyDescription);
+
+        openFrame('password');
+    }, 'JSON').fail(function () {
+        alert("Passwort konnte nicht geladen werden");
+    });
 }
 
 function openKeyRing(keyring) {
@@ -204,9 +213,9 @@ function openKeyRing(keyring) {
             deletePassword($(this).parent());
             e.stopPropagation();
         });
-        //passwords.find('.password').on('click', function () {
-        //    openPassword($(this));
-        //});
+        passwords.find('.password').on('click', function () {
+            openPassword($(this).attr("ref"));
+        });
     });
 
     openFrame('keyring');
