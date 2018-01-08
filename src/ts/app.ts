@@ -63,8 +63,8 @@ export class Server {
         this.port = (port != null) ? port : this.port;
         this.app.set('port', this.port);
         let ssl = {
-            key: fs.readFileSync('../ssl/sse.key'),
-            cert: fs.readFileSync('../ssl/sse.pem')
+            key: fs.readFileSync('ssl/sse.key'),
+            cert: fs.readFileSync('ssl/sse.pem')
         };
         this.httpsServer = https.createServer(ssl, this.app);
         this.httpsServer.listen(this.port);
