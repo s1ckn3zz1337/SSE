@@ -13,6 +13,9 @@ $(function () {
     let form = $('.form-addkeyring');
     // Form bindings
     form.on('submit', function (e) {
+
+        form.find("button").attr('disabled', true); // Button deaktivieren
+
         const keys = new JSEncrypt({default_key_size:2048});
         showLoader();
         // generate new key
@@ -27,11 +30,13 @@ $(function () {
             element.setAttribute("download", keyRingName + ".pem");
             element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
             element.click();
+            form.find('input[type=text],textarea').val('');
         }).fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
         }).always(function () {
             openFrame('keyrings');
             loadKeyRings();
+            form.find("button").attr('disabled', false); // Button aktivieren
         });
 
         e.preventDefault();
@@ -78,7 +83,7 @@ function loadKeyRings() {
             keyrings.append('<div class="warning">Kein Schlüsselbund angelegt.</div>');
         else {
             for (var i = 0; i < keyringData.length; i++) {
-                keyrings.append('<div class="keyring" ref="' + keyringData[i].id + '">' + keyringData[i].name + '</div>');
+                keyrings.append('<div class="keyring" ref="' + keyringData[i].id + '" title="' + keyringData[i].description + '">' + keyringData[i].name + ' <div class="delete"></div></div>');
                 memory[keyringData[i].id] = keyringData[i];
             }
         }
@@ -90,6 +95,10 @@ function loadKeyRings() {
         // Test
         //keyrings.append('<div class="keyring" ref="666">Testring</div>');
 
+        keyrings.find('.keyring .delete').on('click', function (e) {
+            deleteKeyRing($(this).parent());
+            e.stopPropagation();
+        });
         keyrings.find('.keyring').on('click', function () {
             openKeyRing($(this));
         });
@@ -188,6 +197,23 @@ function openKeyRing(keyring) {
     });
 
     openFrame('keyring');
+}
+
+function deleteKeyRing(keyring)
+{
+    var name = keyring.text();
+    var idkeyring = keyring.attr("ref");
+
+    $.ajax({
+        url: '/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring,
+        type: 'DELETE',
+        success: function(result) {
+            keyring.remove();
+        },
+        fail: function () {
+            alert('Fehler beim Löschen des Schlüsselbunds '+name+'!');
+        }
+    });
 }
 
 function openFrame(name) {

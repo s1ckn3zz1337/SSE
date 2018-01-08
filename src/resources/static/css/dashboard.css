@@ -68,6 +68,11 @@ body, html {
     height: 100px;
 }
 
+.form button:disabled
+{
+    background: #C0C0C0;
+}
+
 
 .forgot-password {
     color: rgb(104, 145, 162);
@@ -129,6 +134,7 @@ h1
     box-sizing: border-box;
     padding: 5px 10px;
     border-top: 1px solid #777777;
+    position: relative;
 }
 #keyrings .keyring:hover
 {
@@ -176,4 +182,16 @@ h1
 #passwords .password:last-child
 {
     border-bottom: 1px solid #777777;
+}
+
+.delete
+{
+    height: 16px;
+    width: 16px;
+    background: url('../img/delete.png');
+    background-size: 100% 100%;
+    display: inline-block;
+    float: right;
+    vertical-align: text-bottom;
+    margin-top: 2px;
 }
