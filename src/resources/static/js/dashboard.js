@@ -28,8 +28,12 @@ $(function () {
             if (element.download !== undefined) {
                 element.setAttribute("download", filename);
                 element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
+                document.documentElement.appendChild(element);
+                element.onclick = function(){
+                    element.remove();
+                }
                 element.click();
-                formAddKeyring.find('input[type=text],textarea').val('');
+                formAddKeyring[0].reset();
             } else if (window.Blob && window.navigator.msSaveOrOpenBlob) {
                 let blob = new Blob([privateKey]);
                 window.navigator.msSaveBlob(blob, filename);
