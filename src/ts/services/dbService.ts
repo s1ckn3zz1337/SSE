@@ -126,7 +126,6 @@ export function getKeyRingById(id: string): Promise<KeyRing> {
         .then(resolve => KeyRing.getFromDocument(resolve));
 }
 
-/** TODO keyRing and key should probably both have a name and a description? */
 function createNewKeyRing(data: KeyRing): Promise<KeyRingDocument> {
     const newKeyRing = new scheme.KeyRing({
         name: data.name,
@@ -170,21 +169,18 @@ function addExistingKeyEntity(ringId: string, data: KeyEntity): Promise<KeyEntit
 }
 
 export function addNewKeyEntity(userId: string, ringId: string, keyEntity: KeyEntity): Promise<KeyEntity> {
-    return new Promise<KeyEntity>((resolve, reject) => {
-        getUserById(userId).then(user => {
-            if (user.keyrings.find(value => {
-                    return value.id == ringId;
-                })) {
-                return createNewKeyEntity(keyEntity).then(resolve => {
-                    keyEntity.id = resolve.id;
-                    console.log("RingId: " + ringId);
-                    return addExistingKeyEntity(ringId, keyEntity)
-                })
-            } else {
-                reject(new Error('userId doesnt have the provided key id, something is wrong, maybe hack attemnt'));
-            }
+    return getUserById(userId).then(user => {
+        let userHasKeyring = user.keyrings.find(value => {
+            return value.id == ringId;
         });
-
+        if (userHasKeyring) {
+            return createNewKeyEntity(keyEntity).then(resolve => {
+                keyEntity.id = resolve.id;
+                return addExistingKeyEntity(ringId, keyEntity);
+            });
+        } else {
+            return Promise.reject('userId doesnt have the provided key id, something is wrong, maybe hack attemnt');
+        }
     });
 }
 
