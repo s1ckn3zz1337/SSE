@@ -3,6 +3,7 @@ const buildDir = "./build/";
 const resources = "src/resources/**/*.*";
 const jsFiles = "src/js/**/*.js";
 const htmlFiles = "src/html/**/*.html";
+const certificate = "src/ts/ssl/*.*";
 const sourcemaps = require("gulp-sourcemaps");
 
 var del = require("del");
@@ -23,6 +24,7 @@ gulp.task("default", function () {
         gulp.watch(tsFiles, ["deploy"]);
         gulp.watch(resources, ["deploy"]);
         gulp.watch(htmlFiles, ["deploy"]);
+        gulp.watch(certificate, ["deploy"]);
     });
 });
 
@@ -40,4 +42,6 @@ function deploy() {
         .pipe(gulp.dest(buildDir));
     gulp.src(htmlFiles)
         .pipe(gulp.dest(buildDir));
+    gulp.src(certificate)
+        .pipe(gulp.dest(buildDir + "/ssl"));
 }
