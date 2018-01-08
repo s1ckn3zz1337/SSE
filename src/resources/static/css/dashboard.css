@@ -107,7 +107,7 @@ h1
  * Keyring Interface
  */
 
-.center-container
+#keyrings
 {
     width: 100%;
     padding: 20px;
@@ -119,6 +119,11 @@ h1
 #keyrings.loading
 {
     background: url('../img/loading.gif') center;
+}
+
+#admin-interface
+{
+    max-width: 500px;
 }
 
 #keyrings .warning
