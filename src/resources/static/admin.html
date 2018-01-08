@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Interface</title>
     <meta charset="utf-8" />
+    <title>Admin Interface</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/dashboard.css" rel="stylesheet" media="screen">
 </head>
 <body>
+<div class="container">
+    <div class="card card-container" id="admin-interface">
+        <h1>Admin Interface</h1>
+        <form class="form-search-user">
+            <input type="text" id="inputEmail" class="form-control" placeholder="Benutzername" name="username" required autofocus>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Suchen</button>
+        </form><!-- /form -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Benutzername</th>
+                        <th>ID</th>
+                        <th>Löschen</th>
+                    </tr>
+                </thead>
+                <tbody id="search-response"></tbody>
+            </table>
+    </div><!-- /card-container -->
+</div><!-- /container -->
 
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="js/jquery.cookie.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>

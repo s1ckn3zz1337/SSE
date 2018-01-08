@@ -121,6 +121,11 @@ h1
     background: url('../img/loading.gif') center;
 }
 
+#admin-interface
+{
+    max-width: 500px;
+}
+
 #keyrings .warning
 {
     text-align: center;
