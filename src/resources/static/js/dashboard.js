@@ -108,7 +108,7 @@ function loadKeyRings() {
             e.stopPropagation();
         });
         keyrings.find('.keyring').on('click', function () {
-            openKeyRing($(this));
+            openKeyRing($(this).attr('ref'));
         });
         hideLoader();
     });
@@ -222,12 +222,11 @@ function openPassword(key) {
     });
 }
 
-function openKeyRing(keyring) {
+function openKeyRing(idkeyring) {
     // Open a specific keyring
-    var name = keyring.text();
-    currentKeyRingId = keyring.attr("ref");
+    currentKeyRingId = idkeyring;
 
-    $('#keyringname').text(name);
+    $('#keyringname').text($('.keyring[ref='+idkeyring+']').text());
 
     $('#input-idkeyring').val(currentKeyRingId);
     $('#input-public-key').val(memory[currentKeyRingId].publicKey);
