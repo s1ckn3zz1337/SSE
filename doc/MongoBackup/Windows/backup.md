@@ -1,5 +1,7 @@
+# General Information
+This backup method is only suitable for very small database instances.
+For larger database instances or a distributed database please refer to the mongoDB documentation or seek help from the developers as described in the main documentation.
 # Windows
-
 ## Create Backup
 Please update the variables before running createBackup.bat
 e.g.
