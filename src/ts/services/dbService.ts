@@ -83,6 +83,18 @@ export function findUser(userName: string): Promise<User[]> {
         log.error(err);
         return Promise.reject(err);
     });
+    /* TODO use or delete
+    scheme.User.find(userName).then( res => {//{'username' : {$regex : ".*" + myUser + ".*"}}).then(res => {
+            console.log(res);
+            const users = new Array<User>();
+            res.forEach(one => {
+                users.push(User.getFromDocument(one))
+            });
+            return resolve(users);
+        }).catch(err => {
+            return reject(err);
+        });
+    */
 }
 
 export function listUsers() {

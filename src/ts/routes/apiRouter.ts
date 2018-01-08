@@ -53,8 +53,8 @@ apiRouter.post('/register', (req: Req, res: Res) => {
  * Search for User - inject SQL here
  */
 apiRouter.post('/user', (req: Req, res: Res) => {
-    const username = getUsername(req);
-    dbService.findUser(username).then(fulfilled => {
+    const query = getQuery(req);
+    dbService.findUser(query).then(fulfilled => {
         res.statusCode = 200;
         res.send(fulfilled);
     }, rejected => {
@@ -237,6 +237,11 @@ function getKeyRingId(req: Req): string {
 /** from body */
 function getUsername(req: Req): string {
     return req.body["username"];
+}
+
+/** from body */
+function getQuery(req: Req): string {
+    return req.body["query"];
 }
 
 /** from body */
