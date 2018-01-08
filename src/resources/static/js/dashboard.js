@@ -22,11 +22,22 @@ $(function () {
         keyRingData.publicKey = keys.getPublicKey();
         const privateKey = keys.getPrivateKey();
         $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
-            let keyRingName = keyRingData.name;
+            let filename = keyRingData.name + ".pem";
             let element = document.createElement("a");
-            element.setAttribute("download", keyRingName + ".pem");
-            element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
-            element.click();
+            console.dir(element);
+            console.log(element.download);
+            console.log(element.download == undefined);
+            if(element.download !== undefined){
+                element.setAttribute("download", filename);
+                element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
+                console.log("Click");
+                element.click();
+            }else if(window.Blob && window.navigator.msSaveOrOpenBlob){
+                let blob = new Blob([privateKey]);
+                window.navigator.msSaveBlob(blob, filename);
+            }else{
+                //addPrivateKeyHtml(privateKey);
+            }
         }).fail(function () {
             alert("Schlüsselbund konnte nicht angelegt werden.");
         }).always(function () {
@@ -53,6 +64,27 @@ $(function () {
     });
 
 });
+
+function addPrivateKeyHtml(privateKey) {
+    let wrapper = document.createElement("div");
+    wrapper.textContent = "Your browser does not support the download, please save the privateKey into a file yourself";
+    wrapper.className = "center-container";
+    
+    let removeButton = document.createElement("input");
+    removeButton.type = "button";
+    removeButton.className = "btn btn-lg btn-primary btn-block remove-workaround";
+    removeButton.textContent = "Remove me!";
+    removeButton.onclick = function(){
+        wrapper.remove();
+    }
+    
+    let privateKeyDiv = document.createElement("div");
+    privateKeyDiv.className = 'generated-private-key';
+    privateKeyDiv.textContent = privateKey;
+
+    privateKeyDiv.appendChild(removeButton);
+    wrapper.appendChild(privateKeyDiv);
+}
 
 function ConvertFormToJSON(form){
     var array = jQuery(form).serializeArray();
@@ -107,8 +139,8 @@ function hideLoader(){
 
 var currentKeyRingId;
 
-const passwordDisplay = `password-display`;
-const showHide = `show-hide`;
+const passwordDisplay = "password-display";
+const showHide = "show-hide";
 
 function decryptPasswords(){
     const fileInput = document.getElementById("keyringprivatekey");
@@ -140,7 +172,7 @@ function decryptPasswords(){
 
 function addShowHideHandlers(){
     $('.' + showHide).change(function () {
-        let $display = $(`.` + passwordDisplay + `[ref='` + $(this).attr('ref') + `']`);
+        let $display = $("." + passwordDisplay + "[ref='" + $(this).attr('ref') + "']");
         if ($(this).is(":checked")) {
             $display.attr('type', 'text');
         } else {
@@ -151,8 +183,8 @@ function addShowHideHandlers(){
 
 function addDecryptedPasswordField(keyId, decryptedPassword) {
     const pwDiv = $(".password[ref=" + keyId + "]");
-    pwDiv.after(`<input type='password' class='`+ passwordDisplay + `' ref='` + keyId + `' value='` + decryptedPassword + `'></input>
-                 <input type="checkbox" class="show-hide" ref='`+ keyId + `' name="show-hide" value="" />`);
+    pwDiv.after("<input type='password' class='" + passwordDisplay + "' ref='" + keyId + "' value='" + decryptedPassword + "'></input>" +
+        "<input type='checkbox' class='show-hide' ref='" + keyId + "' name='show-hide' value='' />");
 }
 
 function openKey(key) {
