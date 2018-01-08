@@ -1,1 +1,1 @@
-"c:\Program Files\MongoDB\Server\3.6\bin\mongo.exe" -u "admin" -p "1234" --authenticationDatabase "admin"
+mongo admin -u "admin" -p "1234" --authenticationDatabase "admin"

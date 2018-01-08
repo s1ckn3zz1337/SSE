@@ -13,7 +13,7 @@ if "%backupRootDir%;%backupPrefix%" == ";" (
 @REM get current date year_month_day
 set backupTimestamp=%date:~6,4%_%date:~3,2%_%date:~0,2%
 @REM get user
-set /p user="Adminuser: "
+set /p user="Username: "
 @REM get password with powershell helper
 for /f "delims=" %%i in ('powershell -file .\windowsHelper\readPwd.ps1') do set passwd=%%i
 @REM use credentials to backup/dump the database
