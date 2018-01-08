@@ -10,9 +10,12 @@ $(function () {
     $('.btn-addpassword').on('click', function () {
         openFrame('addpassword');
     });
-    let form = $('.form-addkeyring');
     // Form bindings
+    let form = $('.form-addkeyring');
     form.on('submit', function (e) {
+
+        form.find("button").attr('disabled', true); // Button deaktivieren
+
         const keys = new JSEncrypt({default_key_size:2048});
         showLoader();
         // generate new key
@@ -24,14 +27,11 @@ $(function () {
         $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
             let filename = keyRingData.name + ".pem";
             let element = document.createElement("a");
-            console.dir(element);
-            console.log(element.download);
-            console.log(element.download == undefined);
             if(element.download !== undefined){
                 element.setAttribute("download", filename);
                 element.setAttribute("href", "data:application/octet-stream;base64," + btoa(privateKey));
-                console.log("Click");
                 element.click();
+                form.find('input[type=text],textarea').val('');
             }else if(window.Blob && window.navigator.msSaveOrOpenBlob){
                 let blob = new Blob([privateKey]);
                 window.navigator.msSaveBlob(blob, filename);
@@ -43,22 +43,28 @@ $(function () {
         }).always(function () {
             openFrame('keyrings');
             loadKeyRings();
+            form.find("button").attr('disabled', false); // Button aktivieren
         });
 
         e.preventDefault();
     });
-    $('.form-addpassword').on('submit', function (e) {
-        const formData = ConvertFormToJSON($('.form-addpassword'));
+    form = $('.form-addpassword');
+    form.on('submit', function (e) {
+
+        form.find("button").attr('disabled', true); // Button deaktivieren
+
+        const formData = ConvertFormToJSON(form);
         const cryptor = new JSEncrypt();
         cryptor.setPublicKey(formData.publicKey);
         formData.password = cryptor.encrypt(formData.password);
         formData.publicKey = '';
         $.post('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId + '/key', formData, function (response) {
+            form.find('input[type=text],textarea').val('');
         }).fail(function () {
             alert("Passwort konnte nicht angelegt werden.");
         }).always(function () {
-            openFrame('passwords');
-            loadKeyRings();
+            openFrame('keyring');
+            form.find("button").attr('disabled', false); // Button aktivieren
         });
         e.preventDefault();
     });
@@ -110,7 +116,7 @@ function loadKeyRings() {
             keyrings.append('<div class="warning">Kein Schlüsselbund angelegt.</div>');
         else {
             for (var i = 0; i < keyringData.length; i++) {
-                keyrings.append('<div class="keyring" ref="' + keyringData[i].id + '">' + keyringData[i].name + '</div>');
+                keyrings.append('<div class="keyring" ref="' + keyringData[i].id + '" title="' + keyringData[i].description + '">' + keyringData[i].name + ' <div class="delete"></div></div>');
                 memory[keyringData[i].id] = keyringData[i];
             }
         }
@@ -122,6 +128,10 @@ function loadKeyRings() {
         // Test
         //keyrings.append('<div class="keyring" ref="666">Testring</div>');
 
+        keyrings.find('.keyring .delete').on('click', function (e) {
+            deleteKeyRing($(this).parent());
+            e.stopPropagation();
+        });
         keyrings.find('.keyring').on('click', function () {
             openKeyRing($(this));
         });
@@ -210,16 +220,55 @@ function openKeyRing(keyring) {
             passwords.append('<div class="warning">Kein Passwort angelegt.</div>');
         else {
             for (var i = 0; i < passwds.length; i++) {
-                passwords.append('<div class="password" ref="' + passwds[i].id + '">' + passwds[i].keyName + '</div>');
+                passwords.append('<div class="password" ref="' + passwds[i].id + '">' + passwds[i].keyName + ' <div class="delete"></div></div>');
             }
         }
 
     }, 'JSON').fail(function () {
         passwords.append('<div class="warning">Fehler beim Laden der Passwörter.</div>');
     }).always(function () {
+        passwords.find('.password .delete').on('click', function (e) {
+            deletePassword($(this).parent());
+            e.stopPropagation();
+        });
+        //passwords.find('.password').on('click', function () {
+        //    openPassword($(this));
+        //});
     });
 
     openFrame('keyring');
+}
+
+function deleteKeyRing(keyring)
+{
+    var name = keyring.text();
+    var idkeyring = keyring.attr("ref");
+
+    sendApiDelete('/api/user/' + $.cookie('userid') + '/keyring/'+idkeyring, function () { keyring.remove(); }, 'Fehler beim Löschen des Schlüsselbunds '+name+'!');
+}
+
+function deletePassword(password)
+{
+    var name = password.text();
+    var idpassword = password.attr("ref");
+
+    sendApiDelete('/api/user/' + $.cookie('userid') + '/keyring/'+currentKeyRingId+'/key/'+idpassword, function () { password.remove(); }, 'Fehler beim Löschen des Passworts '+name+'!');
+}
+
+function sendApiDelete(url, successCallback, failMessage)
+{
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function(result) {
+            successCallback();
+        },
+        error: function (result) {
+            alert(failMessage);
+            //@DEBUG
+            console.log(result);
+        }
+    });
 }
 
 function openFrame(name) {

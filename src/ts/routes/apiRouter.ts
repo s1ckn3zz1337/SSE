@@ -6,6 +6,7 @@ import {logFactory} from "../config/ConfigLog4J";
 import {User} from "../objects/User";
 import {KeyPair, KeyRing} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
+import {getKeyEntity} from "../services/dbService";
 
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -140,6 +141,32 @@ apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
             res.sendStatus(200);
         }).catch(rejected => {
         res.sendStatus(500);
+    });
+});
+
+apiRouter.get('/user/:uid/keyring/:kid/key/:eid', (req: Req, res: Res) => {
+    /*const userId = getUserId(req);
+    const entId = getKeyEntityId(req);
+    dbService.getUserById(userId).then( user => {
+        if(user.getKeyEntityById(entId) != null){
+            dbService.getKeyEntity(new KeyEntity(entId, undefined, undefined, undefined, undefined)).then(keyring => {
+                return res.sendStatus(200);
+            })
+        }else{
+            log.error('Key not found');
+            return res.sendStatus(400);
+        }
+    }).catch(error => {
+        log.error('GET ' + req.url + ": " + error);
+        return res.send({statusCode: 500, message: 'Internal Server error', error: error});
+    });*/
+
+
+    dbService.getKeyEntity(getKeyEntityId(req)).then(resolve => {
+        res.send(resolve);
+    }).catch(error => {
+        log.error('GET ' + req.url + ": " + error);
+        res.send({statusCode: 500, message: 'Internal Server error', error: error});
     });
 });
 
