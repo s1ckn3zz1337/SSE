@@ -3,6 +3,8 @@ import {Env} from "./config/config";
 import {logFactory} from "./config/ConfigLog4J";
 import * as bodyParser from "body-parser";
 import * as http from "http";
+import * as https from "https";
+import * as fs from "fs";
 import {apiRouter} from "./routes/apiRouter";
 import * as gatekeeper from './handler/gatekeeper'
 import * as express from "express";
@@ -15,15 +17,16 @@ const log = logFactory.getLogger('.server');
 export class Server {
 
     public app: express.Application;
-    private port = this.normalizePort(Env.port || '3000');
+    private port = this.normalizePort(Env.port || '443');
     private httpServer: http.Server;
+    private httpsServer: https.Server;
 
     public static bootstrap(port?:number, debug?:boolean): Server {
         return new Server(port, debug);
     }
 
     public shutdown(): void {
-        this.httpServer.close();
+        this.httpsServer.close();
     }
 
     private constructor(port?: number, debug?:boolean) {
@@ -37,6 +40,13 @@ export class Server {
     private config(port?: number) {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: false}));
+
+        // create HTTP Server for redirect
+        this.httpServer = http.createServer(function (req, res) {
+            res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+            res.end();
+        }).listen(80);
+
         // bind the auth before we init the static directories
         // -> otherwise the session management won't work properly :(
         this.app.use(session({
@@ -50,14 +60,16 @@ export class Server {
         this.app.use('/dashboard.html', gatekeeper.staticAuth);
         this.app.use('/admin.html', gatekeeper.staticAuth);
         this.app.use(express.static(path.join(__dirname, Env.webContentDir)));
-
         this.port = (port != null) ? port : this.port;
-
         this.app.set('port', this.port);
-        this.httpServer = http.createServer(this.app);
-        this.httpServer.listen(this.port);
-        this.httpServer.on('error', this.getErrorHandler());
-        this.httpServer.on('listening', this.getListeningHandler());
+        let ssl = {
+            key: fs.readFileSync('../ssl/sse.key'),
+            cert: fs.readFileSync('../ssl/sse.pem')
+        };
+        this.httpsServer = https.createServer(ssl, this.app);
+        this.httpsServer.listen(this.port);
+        this.httpsServer.on('error', this.getErrorHandler());
+        this.httpsServer.on('listening', this.getListeningHandler());
         log.info('listening on ' + this.port);
     }
 
@@ -146,7 +158,7 @@ export class Server {
     }
 
     private getListeningHandler() {
-        let httpServer = this.httpServer;
+        let httpServer = this.httpsServer;
         return () => {
             const addr = httpServer.address();
             const bind = typeof addr === 'string'
