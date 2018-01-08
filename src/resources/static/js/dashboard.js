@@ -59,7 +59,8 @@ $(function () {
         }).fail(function () {
             alert("Passwort konnte nicht angelegt werden.");
         }).always(function () {
-            openFrame('keyring');
+            //openFrame('keyring');
+            openKeyRing(currentKeyRingId);
             formAddPassword.find("button").attr('disabled', false); // Button aktivieren
         });
         e.preventDefault();
@@ -171,7 +172,6 @@ function decryptPassword(encrypted){
                 const cryptor = new JSEncrypt();
                 cryptor.setPrivateKey(privateKey);
                 var decrypt = cryptor.decrypt(encrypted);
-                alert(decrypt);
                 $('#keyPassword').val(decrypt).attr('type', 'text');
             };
             r.readAsText($('#keyringprivatekey')[0].files[0]);
