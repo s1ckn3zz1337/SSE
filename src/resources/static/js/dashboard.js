@@ -88,7 +88,7 @@ function loadKeyRings() {
     }).always(function () {
 
         // Test
-        keyrings.append('<div class="keyring" ref="666">Testring</div>');
+        //keyrings.append('<div class="keyring" ref="666">Testring</div>');
 
         keyrings.find('.keyring').on('click', function () {
             openKeyRing($(this));
