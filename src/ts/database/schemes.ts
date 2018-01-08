@@ -6,24 +6,27 @@ import {Schema, model, SchemaDefinition, Document} from "mongoose";
 export const keyEntitySchema: Schema = new Schema({
     keyName: {type: String, required: true},
     keyEncryptedPassword: {type: String, required: true},
-    keyDescription: String,
-    keyURL: String
+    keyDescription: {type: String, required: true},
+    keyURL: {type: String, required: true},
+    keyUsername: {type: String, required: true}
 });
 
 export interface KeyEntityDocument extends Document {
     keyName: string,
     keyEncryptedPassword: string,
-    keyDescription?: string,
-    keyURL?: string
+    keyDescription: string,
+    keyURL: string,
+    keyUsername: string
 }
 
 /** Key Ring */
 export const keyRingSchema: Schema = new Schema({
     name: {type: String, required: true},
-    description: String,
+    description: {type: String, required: true},
     publicKey: {type: String, required: true},
     keyEntities: [{type: Schema.Types.ObjectId, ref: "KeyEntity"}]
 });
+
 export interface KeyRingDocument extends Document {
     name: string,
     description?: string,

@@ -68,8 +68,7 @@ export class User implements IUser {
 
     getKeyEntityById(entId: string) {
         return this.keyrings.find(ring => {
-            const exists = ring.getKeyEntity(entId);
-            return exists != null;
+            return ring.getKeyEntity(entId) != null;
         });
     }
 

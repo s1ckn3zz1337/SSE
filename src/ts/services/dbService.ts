@@ -1,18 +1,13 @@
 // import credentials from config
 import {Env} from "../config/config";
 import {logFactory} from "../config/ConfigLog4J";
-import {Logger} from "typescript-logging";
 import * as scheme from '../database/schemes';
-import {error} from "util";
 import * as mongoose from "mongoose";
 import {MongoError} from "mongodb";
 import {User} from "../objects/User";
 import {KeyRing} from "../objects/KeyRing";
-import {KeyEntity} from "../objects/Model";
-import {runInNewContext} from "vm";
+import {KeyEntity} from "../objects/KeyEntity";
 import {KeyEntityDocument, KeyRingDocument} from "../database/schemes";
-import {reporter} from "gulp-typescript";
-import {mongo} from "mongoose";
 
 const log = logFactory.getLogger(".dbService.ts");
 
@@ -154,10 +149,11 @@ export function getKeyRingById(id: string): Promise<KeyRing> {
 }
 
 function createNewKeyRing(data: KeyRing): Promise<KeyRingDocument> {
+    console.dir(data);
     const newKeyRing = new scheme.KeyRing({
         name: data.name,
         description: data.description,
-        publicKey: data.publicKey
+        publicKey: data.publicKey,
     });
     return newKeyRing.save();
 }
@@ -173,6 +169,10 @@ export function addNewKeyRing(userId: string, data: KeyRing): Promise<KeyRing> {
         .then((onfullfil) => {
             data.id = onfullfil.id;
             return addExistingKeyRing(userId, data);
+        })
+        .catch(err =>{
+            log.error("Error at creating new key ring: " + err);
+            return Promise.reject(err);
         });
 };
 
@@ -185,7 +185,8 @@ function createNewKeyEntity(keyEntity: KeyEntity): Promise<KeyEntityDocument> {
         keyName: keyEntity.keyName,
         keyEncryptedPassword: keyEntity.keyEncryptedPassword,
         keyDescription: keyEntity.keyDescription,
-        keyURL: keyEntity.keyURL
+        keyURL: keyEntity.keyURL,
+        keyUsername: keyEntity.keyUsername
     });
     return newKeyEntity.save();
 }
@@ -211,8 +212,8 @@ export function addNewKeyEntity(userId: string, ringId: string, keyEntity: KeyEn
     });
 }
 
-export function deleteKeyEntity(keyEntity: KeyEntity) {
-    return scheme.KeyEntity.findByIdAndRemove(keyEntity.id)
+export function deleteKeyEntity(keyId: string) {
+    return scheme.KeyEntity.findByIdAndRemove(keyId)
         .then(res => KeyEntity.getFromDocument(res));
 }
 

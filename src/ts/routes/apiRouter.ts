@@ -4,9 +4,8 @@ import * as GateKeeper from "../handler/gatekeeper";
 import * as dbService from '../services/dbService'
 import {logFactory} from "../config/ConfigLog4J";
 import {User} from "../objects/User";
-import {KeyPair, KeyRing} from "../objects/Model";
 import {KeyEntity} from "../objects/KeyEntity";
-import {getKeyEntity} from "../services/dbService";
+import {KeyRing} from "../objects/KeyRing";
 
 const log = logFactory.getLogger('.apiRouter.ts');
 
@@ -119,7 +118,6 @@ apiRouter.post('/user/:uid/keyring', (req: Req, res: Res) => {
         res.statusCode = 201;
         res.send(fulfilled.id);
     }, rejected => {
-        log.error("Error at creating new key ring: " + rejected);
         res.sendStatus(500);
     })
 });
@@ -138,7 +136,7 @@ apiRouter.delete('/user/:uid/keyring/:kid', (req: Req, res: Res) => {
     dbService.deleteKeyRing(getKeyRingId(req)).then(keyring => {
         res.sendStatus(200);
     }).catch(error => {
-        log.error('GET ' + req.url + ": " + error);
+        log.error('DELETE ' + req.url + ": " + error);
         res.send({statusCode: 500, message: 'Internal Server error', error: error});
     });
 });
@@ -150,12 +148,14 @@ apiRouter.post('/user/:uid/keyring/:kid/key', (req: Req, res: Res, next) => {
     const description = getDescription(req);
     const url = getUrl(req);
     const password = getPassword(req);
-    dbService.addNewKeyEntity(userId, kid, new KeyEntity(undefined, name, password, description, url))
+    const username = getUsername(req);
+    dbService.addNewKeyEntity(userId, kid, new KeyEntity(undefined, name, password, description, url, username))
         .then(fulfilled => {
             res.sendStatus(200);
-        }).catch(rejected => {
-        res.sendStatus(500);
-    });
+        }).catch(error => {
+            log.error('POST ' + req.url + ": " + error);
+            res.sendStatus(500);
+        });
 });
 
 apiRouter.get('/user/:uid/keyring/:kid/key/:eid', (req: Req, res: Res) => {
@@ -189,7 +189,7 @@ apiRouter.delete('/user/:uid/keyring/:kid/key/:eid', (req: Req, res: Res) => {
     const entId = getKeyEntityId(req);
     dbService.getUserById(userId).then( user => {
         if(user.getKeyEntityById(entId) != null){
-            dbService.deleteKeyEntity(new KeyEntity(entId, undefined, undefined, undefined, undefined)).then(keyring => {
+            dbService.deleteKeyEntity(entId).then(keyring => {
                 return res.sendStatus(200);
             })
         }else{
@@ -267,12 +267,7 @@ function getUrl(req: Req): string {
     return req.body['url'];
 }
 
+/** from body */
 function getPublicKey(req: Req): string {
     return req.body["publicKey"];
-}
-
-/** from body */
-function getKeyEnteties(req: Req): KeyEntity[] {
-    const entities: KeyEntity[] = req.body['keyEntities'];
-    return entities;
 }
