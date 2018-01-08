@@ -75,29 +75,13 @@ export function registerUser(data: User): Promise<User> {
         });
 };
 
-export function findUser(userName: String) {
-    var myUser = userName;
-    return new Promise<Array<User>>((resolve, reject) => {
-
-        if(myUser == '' || myUser == undefined) {
-            return resolve();
-        }
-
-        if(myUser == "\'\\\'; return \\\'\\\' == \\\'\'" ||
-            myUser == "\';return \\'\\' == \\''") {
-            myUser = '';
-        }
-
-        scheme.User.find({'username' : {$regex : ".*" + myUser + ".*"}}).then(res => {
-            console.log(res);
-            const users = new Array<User>();
-            res.forEach(one => {
-                users.push(User.getFromDocument(one))
-            });
-            return resolve(users);
-        }).catch(err => {
-            return reject(err);
-        });
+export function findUser(userName: string): Promise<User[]> {
+    return scheme.User.find({ $where: "this.username.includes("+userName+")"})
+    .then(res => {
+        return User.getFromDocuments(res);
+    }).catch(err =>{
+        log.error(err);
+        return Promise.reject(err);
     });
 }
 
@@ -149,7 +133,6 @@ export function getKeyRingById(id: string): Promise<KeyRing> {
 }
 
 function createNewKeyRing(data: KeyRing): Promise<KeyRingDocument> {
-    console.dir(data);
     const newKeyRing = new scheme.KeyRing({
         name: data.name,
         description: data.description,

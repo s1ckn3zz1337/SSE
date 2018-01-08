@@ -58,6 +58,7 @@ apiRouter.post('/user', (req: Req, res: Res) => {
         res.statusCode = 200;
         res.send(fulfilled);
     }, rejected => {
+        log.error("rejected: "+rejected);
         res.sendStatus(500);
     });
 });
