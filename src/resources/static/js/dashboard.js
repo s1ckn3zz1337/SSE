@@ -125,7 +125,7 @@ var currentKeyRingId;
 
 const passwordDisplay = `password-display`;
 const showHide = `show-hide`;
-
+/** Not longer needed
 function decryptPasswords(){
     const fileInput = document.getElementById("keyringprivatekey");
     fileInput.addEventListener('change', function(fileOpenEvent){
@@ -152,6 +152,34 @@ function decryptPasswords(){
         }
     }, false);
     fileInput.click();
+}**/
+
+// Decrypt single Password
+function decryptPassword(encrypted){
+    $('#keyringprivatekey').remove();
+    $('body').append('<input id="keyringprivatekey" style="display:none" type="file" accept=".pem">');
+    const fileInput = document.getElementById("keyringprivatekey");
+    fileInput.addEventListener('change', function(fileOpenEvent){
+        const files = fileOpenEvent.target.files;
+        if(files.length > 0) {
+            if(files.length > 1){
+                alert("Only the first of the selected files will be used as your private key");
+            }
+            const r = new FileReader();
+            r.onload = function (fileLoadEvent) {
+                const privateKey = fileLoadEvent.target.result;
+                const cryptor = new JSEncrypt();
+                cryptor.setPrivateKey(privateKey);
+                var decrypt = cryptor.decrypt(encrypted);
+                alert(decrypt);
+                $('#keyPassword').val(decrypt).attr('type', 'text');
+            };
+            r.readAsText($('#keyringprivatekey')[0].files[0]);
+        }else{
+            alert('No file specified, cannot decrypt :(');
+        }
+    }, false);
+    fileInput.click();
 }
 
 function addShowHideHandlers(){
@@ -171,12 +199,22 @@ function addDecryptedPasswordField(keyId, decryptedPassword) {
                  <input type="checkbox" class="show-hide" ref='`+ keyId + `' name="show-hide" value="" />`);
 }
 
+var currentKey = null;
+
 function openPassword(key) {
     $.get('/api/user/' + $.cookie('userid') + '/keyring/'+currentKeyRingId+'/key/'+key, function (data) {
         console.log(data);
 
         $('#keyName').text(data.keyName);
+        $('#keyUsername').val(data.keyUsername);
         $('#keyDescription').text(data.keyDescription);
+        $('#keyWebsite').text(data.keyURL).attr('href', data.keyURL);
+        $('#keyPassword').val('passwordpassword').attr('type', 'password');
+        currentKey = data;
+
+        $('.btn-decrypt').unbind().on('click', function () {
+            decryptPassword(currentKey.keyEncryptedPassword);
+        });
 
         openFrame('password');
     }, 'JSON').fail(function () {
