@@ -53,11 +53,22 @@ $(function () {
     let formAddPassword = $('.form-addpassword');
     formAddPassword.on('submit', function (e) {
         formAddPassword.find("button").attr('disabled', true); // Button deaktivieren
+
+        // Format URL
+        var urlInput = formAddPassword.find('input[name=url]');
+        var url = urlInput.val();
+        if (!url.match(/^[a-zA-Z]+:\/\//))
+        {
+            url = 'http://' + url;
+            urlInput.val(url);
+        }
+
         const formData = ConvertFormToJSON(formAddPassword);
         const cryptor = new JSEncrypt();
         cryptor.setPublicKey(formData.publicKey);
         formData.password = cryptor.encrypt(formData.password);
         formData.publicKey = '';
+
         $.post('/api/user/' + $.cookie('userid') + '/keyring/' + currentKeyRingId + '/key', formData, function (response) {
             formAddPassword.find('input[type=text],textarea').val('');
         }).fail(function () {
