@@ -75,9 +75,9 @@ export function registerUser(data: User): Promise<User> {
         });
 };
 
-export function findUser(userName: String) {
-    var myUser = userName;
+export function findUser(userName: any) {
     return new Promise<Array<User>>((resolve, reject) => {
+        /*
 
         if(myUser == '' || myUser == undefined) {
             return resolve();
@@ -86,9 +86,9 @@ export function findUser(userName: String) {
         if(myUser == "\'\\\'; return \\\'\\\' == \\\'\'" ||
             myUser == "\';return \\'\\' == \\''") {
             myUser = '';
-        }
+        }*/
 
-        scheme.User.find({'username' : {$regex : ".*" + myUser + ".*"}}).then(res => {
+        scheme.User.find(userName).then( res => {//{'username' : {$regex : ".*" + myUser + ".*"}}).then(res => {
             console.log(res);
             const users = new Array<User>();
             res.forEach(one => {
