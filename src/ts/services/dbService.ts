@@ -192,3 +192,12 @@ export function deleteKeyEntity(keyEntity: KeyEntity) {
     return scheme.KeyEntity.findByIdAndRemove(keyEntity.id)
         .then(res => KeyEntity.getFromDocument(res));
 }
+
+/*export function getKeyEntity(keyEntity: KeyEntity) {
+    return scheme.KeyEntity.(keyEntity.id)
+        .then(res => KeyEntity.getFromDocument(res));
+}*/
+
+export function getKeyEntity(id: string): Promise<KeyEntity> {
+    return scheme.KeyEntity.findOne({_id: id}).then(resolve => KeyEntity.getFromDocument(resolve));
+}
