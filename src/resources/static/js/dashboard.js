@@ -23,7 +23,7 @@ $(function () {
         keyRingData.publicKey = keys.getPublicKey();
         const privateKey = keys.getPrivateKey();
         $.post('/api/user/' + $.cookie('userid') + '/keyring', keyRingData, function (data) {
-            let keyRingName = keyRingData.name;
+            let filename = keyRingData.name + ".pem";
             let element = document.createElement("a");
             if (element.download !== undefined) {
                 element.setAttribute("download", filename);
