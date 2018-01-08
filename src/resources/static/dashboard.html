@@ -22,9 +22,8 @@
         <div class="frame keyring">
             <h1 id="keyringname"></h1>
             <div id="passwords">
-            </div>
-            <input id="keyringprivatekey" style="display:none" type="file" accept=".pem"><br>
-            <button class="btn btn-lg btn-primary btn-block btn-decryptpassword">Passwörter entschlüsseln</button><br>
+            </div><br>
+            <!-- <button class="btn btn-lg btn-primary btn-block btn-decryptpassword">Passwörter entschlüsseln</button><br> -->
             <button class="btn btn-lg btn-primary btn-block btn-addpassword">Neues Passwort anlegen</button><br>
             <a href="#" onclick="openFrame('keyrings')" class="forgot-password">
                 Zurück zur Schlüsselbundübersicht
@@ -33,15 +32,20 @@
         <div class="frame password">
             <h1 id="keyName"></h1>
             <p id="keyDescription"></p>
+            <p>Webseite: <a href="" id="keyWebsite" target="_blank"></a></p>
             <hr>
-            <table>
+            <table style="width: 350px;">
                 <tr>
-                    <td>Benutzername</td>
-                    <td><input type="text" id="key"></td>
+                    <td style="padding-right: 5px;">Benutzername</td>
+                    <td><input type="text" id="keyUsername" style="width: 100%; box-sizing: border-box; height: 40px;"></td>
+                </tr>
+                <tr>
+                    <td>Passwort</td>
+                    <td><input type="text" id="keyPassword" rel="" style="width: 100%; box-sizing: border-box; height: 40px;"></td>
                 </tr>
             </table>
             <input id="keyringprivatekey" style="display:none" type="file" accept=".pem">
-            <button class="btn btn-lg btn-primary btn-block btn-decryptpassword">Passwort entschlüsseln</button><br>
+            <button class="btn btn-lg btn-primary btn-block btn-decrypt">Passwort anzeigen</button><br>
             <a href="#" onclick="openFrame('keyring')" class="forgot-password">
                 Zurück zum Schlüsselbund
             </a>
