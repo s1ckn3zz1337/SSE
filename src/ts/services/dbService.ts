@@ -76,6 +76,9 @@ export function registerUser(data: User): Promise<User> {
 };
 
 export function findUser(userName: string): Promise<User[]> {
+    if(userName == "" || userName == undefined || userName == null){
+        return new Promise<User[]>((a,b)=>{a([])});
+    }
     return scheme.User.find({ $where: "this.username.includes("+userName+")"})
     .then(res => {
         return User.getFromDocuments(res);
