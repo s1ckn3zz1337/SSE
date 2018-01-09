@@ -1,6 +1,6 @@
 [1]: [https://www.mongodb.com/download-center#community]
 
-## Installation
+## Unix Installation
 1. Download and Install [MongoDB][1]
 3. Start MongoDB service
 ```bash
@@ -54,7 +54,7 @@ db.createUser(
 exit
 ```
 
-## Docker Installation of the DB:
+## Docker Installation
 
 1. Download Docker
 
@@ -95,33 +95,44 @@ db.createUser(
 );
 exit;
 ```
-## Scheme
+
+## Windows Installation
+
+1. Download and Install [MongoDB][1]
+2. Go to the MongoSetup/Windows/Init folder
+3. Run the scripts according to their numeration and follow the given instructions [Leave out X. unless you to reset the service]
+4. After everything executed successfully please continue with the scripts in MongoSetup/Windows accordingly [X. is for convenience after the setup]
+
+
+
+## Schemes
 
 ### User:
 ```
 {
-    _id: <ObjectId>,
-    username: String,
-    email: String,
-    password: String,
-    keyrings: [keyring]
+  username: {type: String, required: true, unique: true},
+  password: {type: String, required: true},
+  email: {type: String, required: true, unique: true},
+  keyrings: [{type: Schema.Types.ObjectId, ref: "KeyRing"}]
 }
 ```
 
 ### KeyRing:
 ```
 {
-   _id: <ObjectID>,
-   keyEntities: [keyEntity]
+  name: {type: String, required: true},
+  description: {type: String, required: true},
+  publicKey: {type: String, required: true},
+  keyEntities: [{type: Schema.Types.ObjectId, ref: "KeyEntity"}]
 }
 ```
 ### KeyEntity:
 ```
 {
-    _id: <ObjectId>,
-    keyName: String,
-    keyEncryptedPassword: String,
-    keyDescription: String,
-    keyURL: String
+  keyName: {type: String, required: true},
+  keyEncryptedPassword: {type: String, required: true},
+  keyDescription: {type: String, required: true},
+  keyURL: {type: String, required: true},
+  keyUsername: {type: String, required: true}
 }
 ```

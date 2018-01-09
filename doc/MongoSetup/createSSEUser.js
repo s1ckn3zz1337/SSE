@@ -1,3 +1,6 @@
+/**
+ * Please update the usernames and passwords as required
+ */
 db.auth("admin", "1234");
 db = db.getSiblingDB("sse");
 db.createUser(
