@@ -1,3 +1,6 @@
+/**
+ * Please update the passwords and usernames below as required
+ */
 db.createUser(
   {
     user: "admin",
