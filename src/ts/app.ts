@@ -51,7 +51,7 @@ export class Server {
         // -> otherwise the session management won't work properly :(
         this.app.use(session({
             secret: Math.random().toString(36),
-            cookie: {secure: false, httpOnly: true},
+            cookie: {secure: true, httpOnly: true},
             resave: false,
             saveUninitialized: false,
             //https://expressjs.com/de/advanced/best-practice-security.html
@@ -63,8 +63,8 @@ export class Server {
         this.port = (port != null) ? port : this.port;
         this.app.set('port', this.port);
         let ssl = {
-            key: fs.readFileSync('ssl/sse.key'),
-            cert: fs.readFileSync('ssl/sse.pem')
+            key: fs.readFileSync(__dirname + '/ssl/sse.key'),
+            cert: fs.readFileSync(__dirname + '/ssl/sse.pem')
         };
         this.httpsServer = https.createServer(ssl, this.app);
         this.httpsServer.listen(this.port);
