@@ -3,7 +3,6 @@ import {Env} from "../config/config";
 import {logFactory} from "../config/ConfigLog4J";
 import * as scheme from '../database/schemes';
 import * as mongoose from "mongoose";
-import {MongoError} from "mongodb";
 import {User} from "../objects/User";
 import {KeyRing} from "../objects/KeyRing";
 import {KeyEntity} from "../objects/KeyEntity";
@@ -19,7 +18,7 @@ export function initDBConnection() {
         Env.mongoDB.port + '/' +
         Env.mongoDB.database, {
             useMongoClient: true
-        }, function (err: MongoError) {
+        }, function (err: any) {
             if (err)
                 log.error('Error while creating mongoose connection' + err);
             else
