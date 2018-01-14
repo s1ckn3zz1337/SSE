@@ -187,7 +187,11 @@ function decryptPassword(encrypted){
                 const cryptor = new JSEncrypt();
                 cryptor.setPrivateKey(privateKey);
                 var decrypt = cryptor.decrypt(encrypted);
-                $('#keyPassword').val(decrypt).attr('type', 'text');
+                if(decrypt){
+                    $('#keyPassword').val(decrypt).attr('type', 'text');
+                }else{
+                    alert('Could not decrypt password, propably wrong private key.')
+                }
             };
             r.readAsText($('#keyringprivatekey')[0].files[0]);
         }else{
