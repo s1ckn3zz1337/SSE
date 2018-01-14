@@ -1,6 +1,8 @@
 import * as crypto from 'crypto';
 import {logFactory} from "../config/ConfigLog4J";
+import {Env} from '../config/config'
 const log = logFactory.getLogger('.cryptoService.ts');
+
 /**
  * hash password with sha512.
  * @function
@@ -8,7 +10,7 @@ const log = logFactory.getLogger('.cryptoService.ts');
  * @param {string} salt - Data to be validated.
  */
 const sha512 = function (password: string, salt: string) {
-    const hash = crypto.createHmac('sha512', salt); /** Hashing algorithm sha512 */
+    const hash = crypto.createHmac('sha512', salt + Env.pepper); /** Hashing algorithm sha512 */
     hash.update(password);
     return hash.digest('hex');
 };
