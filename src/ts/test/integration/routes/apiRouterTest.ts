@@ -38,6 +38,7 @@ describe('api router test', () => {
     let createdUserId: string;
     let authCoockie: string;
     let createdKeyRings: Array<string>;
+    let createdTestKeyRing: string;
     let testKeyRing: KeyRing;
     let supertestapp: supertest.SuperTest<supertest.Test>;
     before(done => {
@@ -78,8 +79,6 @@ describe('api router test', () => {
         })
     });
     describe('login test', () => {
-        //todo -> mock the db for the tests or create and remove the entities
-
         it('should return 200 if the user is logged in', done => {
             supertestapp.post('/api/login').set('Content-Type', 'application/json').send(rightLogin).expect(200).end((err, res) => {
                 if (err) done(err);
@@ -153,6 +152,14 @@ describe('api router test', () => {
                 }
             });
         });
+        it('MISUSE CASE: should delete other users keyring ', done => {
+            supertest(app.app).delete('/api/user/' + createdUserId + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').set('Cookie', authCoockie).send().expect(200).end((err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            });
+        });
         it('should delete keyring on valid request', done => {
             supertest(app.app).delete('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').set('Cookie', authCoockie).send().expect(200).end((err, res) => {
                 if (err) done(err);
@@ -161,7 +168,7 @@ describe('api router test', () => {
                 }
             });
         });
-        it('MISUSE CASE should be able to remove other user keyring');
+
         /*
         Ignore this test, as we allow this vulnerability
          */
