@@ -6,7 +6,7 @@ export class Env {
     // hange pepper on deployment
     public static readonly pepper = 'CHANGE_ME_ON_DEPLYOMENT!!!';
     public static readonly mongoDB: MongoConfig = {
-        host: 'localhost',
+        host: 'mongo',
         port: 27017,
         user: 'sseuser',
         password: 'Z2xQK8tASSDF8ZcU3XuSLzNY',

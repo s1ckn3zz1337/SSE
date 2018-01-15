@@ -32,6 +32,8 @@ const rightKeyRing = {
     publicKey: '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs3CuNr0hdPGcfjB3HH6PVdTZlLxCDt4qgljogBBbCjWRTTNSB3XG1DuKQwOnW4p3XMNcnB8TzaXDMA7oNwb04eoqP6rGnhZzrZasoMie2BeCPWQ4hnzBTisY+tGjx59phF35OOO7NQHAZXoPRkc6DzWavj5PvAej9Gw1qCBO4SKZocokuHbLmHgYcNoh8wNyz8EK7ipWGQmaaC9sqh5/LFuroskYx4G5MX6bBd0x/RYx9CEsn/i3nzFdS64DBgAeFU94R0UaVT+LjOWu5viOoYK9hjGtt8RP6ClwH2Dg6ptiSusTwPZ98eMqR5ZUqE04o9rqNJKlk73csEYtZy3/dQIDAQAB\n-----END PUBLIC KEY-----'
 };
 
+// todo add right key entitiy
+
 describe('api router test', () => {
     let testUser: User;
     let app: Server;
@@ -193,15 +195,29 @@ describe('api router test', () => {
     });
     describe('key entity test', () => {
         it('should block non authenticated access', done => {
-            supertestapp.post('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id).set('Content-Type', 'application/json').send({}).expect(401).end(((err, res) => {
+            supertestapp.post('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id + '/key').set('Content-Type', 'application/json').send({}).expect(401).end(((err, res) => {
                 if (err) done(err);
                 else {
                     done();
                 }
             }))
         });
-        it('should create new keyring on valid input');
-        it('can not create key entity if ring doesn\'t exist');
+        it('should create new keyring on valid input', done => {
+            supertestapp.post('/api/user/' + testUser.id + '/keyring/' + testKeyRing.id + '/key').set('Content-Type', 'application/json').set('Cookie', authCoockie).send({}).expect(201).end(((err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            }))
+        });
+        it('can not create key entity if ring doesn\'t exist', done => {
+            supertestapp.post('/api/user/' + testUser.id + '/keyring/' + 'non_existing_key' + '/key').set('Content-Type', 'application/json').set('Cookie', authCoockie).send({}).expect(201).end(((err, res) => {
+                if (err) done(err);
+                else {
+                    done();
+                }
+            }))
+        });
         it('can not create key entity on a existing ring of a different user');
     });
 

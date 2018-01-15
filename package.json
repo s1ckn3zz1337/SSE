@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start-dev": "cd ./build && nodemon ./starter.js",
+    "start": "cd ./build && node ./starter.js",
     "debug": "cd ./build nodemon --inspect-brk ./starter.js",
     "test": "mocha --require ts-node/register build/test/**/**/**Test.js --exit"
   },
